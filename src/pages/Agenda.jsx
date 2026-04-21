@@ -10,7 +10,7 @@ export default function Agenda() {
       <div className="max-w-[1200px] mx-auto px-4">
         
         <div className="text-center mb-24">
-          <span className="font-['Plus_Jakarta_Sans'] font-bold uppercase tracking-[0.2em] text-sm text-[#ff007f] mb-4 block">Notre Agenda</span>
+          <span className="font-bold uppercase tracking-[0.2em] text-sm text-[#ff007f] mb-4 block">Notre Agenda</span>
           <h2 className="text-5xl md:text-8xl font-display text-[#111]">ÉVÉNEMENTS<br/>À VENIR</h2>
         </div>
         
@@ -22,7 +22,7 @@ export default function Agenda() {
               <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#ff007f] rounded-full blur-[150px] opacity-[0.05] group-hover:opacity-[0.1] transition-opacity duration-700"></div>
               
               <div className={`flex-1 order-2 ${i % 2 === 0 ? 'md:order-1' : 'md:order-2'}`}>
-                <div className="inline-block px-4 py-2 bg-black text-white rounded-full text-xs font-bold uppercase tracking-widest font-['Plus_Jakarta_Sans'] mb-6">
+                <div className="inline-block px-4 py-2 bg-black text-white rounded-full text-xs font-bold uppercase tracking-widest mb-6">
                   {event.tag || "À venir"}
                 </div>
                 
@@ -32,11 +32,11 @@ export default function Agenda() {
                   )}
                 </h3>
                 
-                <p className="text-xl font-['Plus_Jakarta_Sans'] text-gray-700 mb-8 leading-relaxed font-medium">
+                <p className="text-xl text-gray-700 mb-8 leading-relaxed font-medium">
                   {event.description}
                 </p>
                 
-                <ul className="space-y-4 mb-12 font-['Plus_Jakarta_Sans'] text-base font-bold text-gray-600">
+                <ul className="space-y-4 mb-12 text-base font-bold text-gray-600">
                    <li className="flex items-center gap-4 bg-[#F7F6F2] p-5 rounded-2xl border border-black/5"><MapPin className="text-[#ff7f00] w-6 h-6"/> {event.location}</li>
                    <li className="flex items-center gap-4 bg-[#F7F6F2] p-5 rounded-2xl border border-black/5"><Calendar className="text-[#ff007f] w-6 h-6"/> {event.date}</li>
                 </ul>

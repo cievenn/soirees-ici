@@ -29,7 +29,7 @@ export default function Navbar({ currentPage, navigateTo, isScrolled, isMobileMe
             <button
               key={link.id}
               onClick={() => navigateTo(link.id)}
-              className={`font-['Plus_Jakarta_Sans'] font-extrabold text-sm tracking-widest uppercase px-6 py-3 rounded-full transition-all duration-300 ${
+              className={`font-display text-xl px-6 py-2 rounded-full transition-all duration-300 ${
                 currentPage === link.id 
                   ? 'bg-black text-white shadow-lg' 
                   : 'text-gray-500 hover:text-black hover:bg-black/5'

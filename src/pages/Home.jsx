@@ -48,7 +48,7 @@ export default function Home({ navigateTo }) {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ff007f] opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-[#ff007f]"></span>
               </span>
-              <span className="font-['Plus_Jakarta_Sans'] font-bold text-xs uppercase tracking-widest text-gray-800">
+              <span className="font-bold text-xs uppercase tracking-widest text-gray-800">
                 La référence à Jodoigne
               </span>
             </div>
@@ -61,7 +61,7 @@ export default function Home({ navigateTo }) {
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 font-['Plus_Jakarta_Sans'] max-w-xl mb-12 leading-relaxed font-medium animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <p className="text-xl md:text-2xl text-gray-600 max-w-xl mb-12 leading-relaxed font-medium animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               Ne rate plus aucun événement. Rejoins la plus grande communauté de la région pour des concepts 100% inédits.
             </p>
 
@@ -88,7 +88,7 @@ export default function Home({ navigateTo }) {
               
               {/* Floating Element */}
               <div className="absolute bottom-8 left-8 right-8 bg-white/90 backdrop-blur-xl p-6 rounded-[2rem] text-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 shadow-xl">
-                <p className="font-['Plus_Jakarta_Sans'] font-black text-xs uppercase tracking-widest text-[#ff007f] mb-2">{DATA.upcomingEvents[0]?.tag}</p>
+                <p className="font-black text-xs uppercase tracking-widest text-[#ff007f] mb-2">{DATA.upcomingEvents[0]?.tag}</p>
                 <p className="font-display text-3xl text-black">{DATA.upcomingEvents[0]?.title}</p>
               </div>
             </div>
@@ -113,7 +113,7 @@ export default function Home({ navigateTo }) {
       {/* 2. BENTO GRID (Agenda) */}
       <section id="bento-grid" className="py-24 px-4 md:px-8 max-w-[1600px] mx-auto">
         <div className="mb-16 md:mb-24 fade-up-element text-center flex flex-col items-center">
-          <span className="font-['Plus_Jakarta_Sans'] font-bold uppercase tracking-[0.2em] text-sm text-[#ff007f] mb-4 block">Notre Agenda</span>
+          <span className="font-bold uppercase tracking-[0.2em] text-sm text-[#ff007f] mb-4 block">Notre Agenda</span>
           <h2 className="text-5xl md:text-7xl font-display text-[#111] leading-tight text-center">
             L'ÉVIDENCE DE <br/>TON ANNÉE.
           </h2>
@@ -138,14 +138,14 @@ export default function Home({ navigateTo }) {
                    i >= arr.length - 2 ? <span key={i} className={THEME.gradientText}>{word} </span> : word + ' ' 
                 )}
               </h3>
-              <p className="font-['Plus_Jakarta_Sans'] text-gray-500 font-medium text-lg">{DATA.upcomingEvents[0]?.description}</p>
+              <p className="text-gray-500 font-medium text-lg">{DATA.upcomingEvents[0]?.description}</p>
             </div>
 
             <div className="relative z-10 flex flex-wrap gap-4 mt-8">
               {Object.entries({ J: timeLeft.days, H: timeLeft.hours, M: timeLeft.mins, S: timeLeft.secs }).map(([label, value]) => (
                 <div key={label} className="bg-[#f7f6f2] border border-black/5 rounded-[2rem] w-20 h-24 md:w-28 md:h-32 flex flex-col items-center justify-center shadow-inner">
                   <span className="text-3xl md:text-5xl font-display text-black">{value.toString().padStart(2, '0')}</span>
-                  <span className="text-gray-400 font-['Plus_Jakarta_Sans'] font-bold text-xs mt-1">{label}</span>
+                  <span className="text-gray-400 font-bold text-xs mt-1">{label}</span>
                 </div>
               ))}
             </div>
@@ -166,7 +166,7 @@ export default function Home({ navigateTo }) {
                 <ImageIcon className="w-8 h-8"/>
               </div>
               <h3 className="text-4xl font-display">GALERIES</h3>
-              <p className="font-['Plus_Jakarta_Sans'] font-bold tracking-widest text-xs uppercase mt-2 opacity-80">Voir les souvenirs</p>
+              <p className="font-bold tracking-widest text-xs uppercase mt-2 opacity-80">Voir les souvenirs</p>
             </div>
           </div>
 
@@ -176,11 +176,11 @@ export default function Home({ navigateTo }) {
             <div className="absolute right-0 top-0 w-[800px] h-[800px] bg-gradient-to-br from-blue-600/20 to-purple-600/20 rounded-full blur-[100px]"></div>
             
             <div className="flex-1 relative z-10 text-white">
-              <span className="px-5 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[#ff7f00] font-bold text-xs uppercase tracking-widest mb-8 inline-block font-['Plus_Jakarta_Sans']">{DATA.upcomingEvents[1]?.tag}</span>
+              <span className="px-5 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[#ff7f00] font-bold text-xs uppercase tracking-widest mb-8 inline-block ">{DATA.upcomingEvents[1]?.tag}</span>
               <h3 className="text-5xl md:text-7xl font-display mb-6 leading-[0.9]">
                 {DATA.upcomingEvents[1]?.title}
               </h3>
-              <p className="text-gray-400 font-['Plus_Jakarta_Sans'] text-lg leading-relaxed max-w-lg mb-10 font-medium">
+              <p className="text-gray-400 text-lg leading-relaxed max-w-lg mb-10 font-medium">
                 {DATA.upcomingEvents[1]?.description}
               </p>
               <Button onClick={() => navigateTo('agenda')} variant="outline" className="border-white/30 text-white hover:border-white hover:bg-white hover:text-black">

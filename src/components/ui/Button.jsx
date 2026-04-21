@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Button = ({ children, variant = "primary", className = "", onClick, icon = false }) => {
-  const base = "px-8 py-5 rounded-[2rem] font-['Plus_Jakarta_Sans'] font-extrabold text-sm tracking-[0.1em] uppercase transition-all duration-500 flex items-center justify-center gap-3 relative group overflow-hidden";
+  const base = "px-8 py-5 rounded-[2rem] font-extrabold text-sm tracking-[0.1em] uppercase transition-all duration-500 flex items-center justify-center gap-3 relative group overflow-hidden";
   
   if (variant === "primary") {
     return (

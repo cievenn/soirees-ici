@@ -20,7 +20,7 @@ export default function Footer({ navigateTo }) {
         {/* Top Section */}
         <div className="flex flex-col lg:flex-row justify-between items-center gap-10 mb-12 border-b border-white/5 pb-12">
           <div className="text-center lg:text-left flex-1">
-            <span className="font-['Plus_Jakarta_Sans'] font-semibold uppercase tracking-[0.2em] text-[#ff007f] text-xs mb-4 inline-block py-1 px-4 rounded-full border border-[#ff007f]/20 bg-[#ff007f]/5 shadow-[0_0_15px_rgba(255,0,127,0.1)]">L'aventure continue</span>
+            <span className="font-semibold uppercase tracking-[0.2em] text-[#ff007f] text-xs mb-4 inline-block py-1 px-4 rounded-full border border-[#ff007f]/20 bg-[#ff007f]/5 shadow-[0_0_15px_rgba(255,0,127,0.1)]">L'aventure continue</span>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display text-white leading-[1] tracking-tight mb-8 hover:skew-x-[-1deg] transition-transform duration-500 cursor-default">
               PRÊT POUR LA <span className={THEME.gradientText}>PROCHAINE ?</span>
             </h2>
@@ -50,7 +50,7 @@ export default function Footer({ navigateTo }) {
         </div>
 
         {/* Bottom links */}
-        <div className="flex flex-col md:flex-row justify-between items-center text-xs font-['Plus_Jakarta_Sans'] font-medium text-gray-400 gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-center text-xs font-medium text-gray-400 gap-6">
           <div className="flex items-center gap-6">
             <a href="#" className="hover:text-white transition-colors">Mentions Légales</a>
             <span className="w-1 h-1 rounded-full bg-white/20"></span>
