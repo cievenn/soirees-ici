@@ -14,6 +14,15 @@ export default function Photos() {
           {DATA.albums.map((event, i) => (
             <a href={event.link} target="_blank" rel="noopener noreferrer" key={i} className="group relative rounded-[3rem] overflow-hidden aspect-square cursor-pointer shadow-xl border border-white/10 bg-black/50 hover:shadow-2xl transition-all duration-500">
               <img src={event.img} alt={event.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+              
+              {event.badge && (
+                <div className="absolute top-6 right-6 z-20">
+                  <span className="px-4 py-2 bg-[#ff007f] text-white rounded-full font-bold text-[10px] sm:text-xs uppercase tracking-widest shadow-lg shadow-[#ff007f]/30">
+                    {event.badge}
+                  </span>
+                </div>
+              )}
+
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-10 text-white">
                 <span className="text-[#ff007f] text-xs font-bold uppercase tracking-widest mb-2">{event.date}</span>
                 <h3 className="text-4xl font-display">{event.name}</h3>
