@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, MapPin, Calendar, Clock, Ticket, ChevronDown, Music, Users, Info, ExternalLink } from 'lucide-react';
 import { DATA } from '../data';
 import { THEME } from '../theme';
@@ -54,6 +54,17 @@ function ProgramTimeline({ program }) {
 
 // ─── Widget Billetterie (colonne droite sticky) ─────────────────────────────
 function TicketWidget({ event }) {
+  useEffect(() => {
+    // Inject Weezevent script
+    if (!document.querySelector('script[src="https://widget.weezevent.com/weez.js"]')) {
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = 'https://widget.weezevent.com/weez.js';
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
   return (
     <div className="bg-white rounded-[2rem] border border-black/8 shadow-2xl overflow-hidden">
       {/* Header coloré */}
@@ -98,14 +109,34 @@ function TicketWidget({ event }) {
           </div>
         )}
 
-        {/* Widget Weezevent placeholder + lien */}
-        <div className="bg-[#f7f6f2] rounded-2xl p-4 border border-black/5 min-h-[80px] flex items-center justify-center">
-          <div className="text-center">
-            <Ticket className="w-6 h-6 text-gray-300 mx-auto mb-2" />
-            <p className="text-xs text-gray-400 font-medium">Widget Weezevent</p>
-            <p className="text-xs text-gray-300">(intégration à configurer)</p>
+        {/* Widget Weezevent intégré */}
+        {event.weezeventId ? (
+          <div className="bg-[#f7f6f2] rounded-2xl border border-black/5 overflow-hidden w-full min-h-[100px]">
+            <a
+              title="Logiciel billetterie en ligne"
+              href={event.ticketUrl}
+              className="weezevent-widget-integration"
+              data-src={event.ticketUrl}
+              data-id={event.weezeventId}
+              data-resize="1"
+              data-width_auto="1"
+              data-noscroll="0"
+              data-use-container="yes"
+              data-type="neo"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Billetterie Weezevent
+            </a>
           </div>
-        </div>
+        ) : (
+          <div className="bg-[#f7f6f2] rounded-2xl p-4 border border-black/5 min-h-[80px] flex items-center justify-center">
+            <div className="text-center">
+              <Ticket className="w-6 h-6 text-gray-300 mx-auto mb-2" />
+              <p className="text-xs text-gray-400 font-medium">Billetterie bientôt disponible</p>
+            </div>
+          </div>
+        )}
 
         {/* Bouton CTA principal */}
         {event.ticketUrl && (
