@@ -5,23 +5,149 @@ export const DATA = {
       id: "new-year",
       title: "NEW YEAR ALL IN 2026",
       date: "31 Décembre 2025",
+      dateDetail: "31 déc. 2025, 22h00 – 1er janv. 2026, 05h00",
       location: "Salle St-Germain, Éghezée",
+      locationDetail: "72 Rue du Libut, 5310 Éghezée, Belgique",
       description: "La seule soirée dont tu as besoin.",
-      image: "/achanger.png", // Image à mettre à jour
+      heroImage: "/achanger.png",
+      image: "/achanger.png",
       tag: "Sold Out Imminent",
-      targetDateForCountdown: new Date(new Date().getFullYear(), 11, 31, 23, 59, 59).getTime() // 31 Décembre, 23:59:59
+      targetDateForCountdown: new Date(new Date().getFullYear(), 11, 31, 23, 59, 59).getTime(),
+
+      // Billetterie
+      ticketUrl: "https://www.weezevent.com/",
+      ticketCTA: "Réserver ma place",
+      ticketPrices: [
+        { label: "Prévente", price: "30€" },
+        { label: "Sur place", price: "35€" },
+      ],
+
+      // Programme
+      program: [
+        {
+          day: "Soirée du 31 Décembre",
+          items: [
+            { time: "22h00", title: "Ouverture des portes", description: "Accueil, bracelets en tissu & goodies" },
+            { time: "00h00", title: "🥂 Champagne à minuit", description: "Champagne offert pour fêter la nouvelle année !" },
+            { time: "00h00 – 05h00", title: "🎧 DJ Sets & Shows", description: "Surprises, cadeaux & ambiance de folie toute la nuit" },
+          ]
+        }
+      ],
+
+      // Boissons
+      boissons: "Eristoff Rouge & Blanche, Capt'ain Morgan, Amaretto, Pisang, Get 27, Bière, Redbull, Softs & Champagne",
+      boissonsLabel: "🔥 Boissons à volonté – ALL IN 🔥",
+
+      // Détails pratiques
+      details: [
+        { label: "📅 Date", value: "31 Décembre 2025, 22h → 05h" },
+        { label: "📍 Lieu", value: "72 Rue du Libut, 5310 Éghezée" },
+        { label: "👴 Âge minimum", value: "15 ans révolus" },
+        { label: "👔 Dress code", value: "Mettez-vous sur votre 31 ! (pas de sportswear)" },
+        { label: "🚗 Accès", value: "E411 sortie 12 «Éghezée» – 5 min Namur, 10 min Jodoigne & Wavre" },
+        { label: "💫 VIP", value: "Salons & tables hautes – MP : The New Year Namur" },
+      ],
+
+      // DJ / Artistes
+      lineup: [
+        { name: "DJ Momo", role: "Coin 80's-90's" },
+        { name: "TBA", role: "Annonce bientôt... 🤫" },
+      ],
     },
     {
       id: "foire",
       title: "LA SEMAINE FOIRE",
-      date: "Été 2026",
-      location: "Jodoigne",
+      date: "14 – 21 Juillet 2026",
+      dateDetail: "Chaque jour de 12h à 21h (dim. jusqu'à 19h)",
+      location: "Terrain de foot, Jodoigne",
+      locationDetail: "Terrain de foot de Jodoigne",
       description: "8 jours de folie absolue au cœur de Jodoigne. Fête foraine, Soirée Mousse, et le mythique Blind Test. Le rendez-vous intergénérationnel incontournable.",
+      heroImage: "/semainefoire1.png",
       image1: "/semainefoire1.png",
       image2: "/semainefoire2.png",
-      tag: "Événement de l'été"
-    }
+      tag: "Événement de l'été",
+
+      // Billetterie (événements spéciaux dans la semaine)
+      ticketUrl: "https://www.weezevent.com/",
+      ticketCTA: "Voir les billets",
+      ticketPrices: [
+        { label: "Entrée foire", price: "Libre" },
+        { label: "Blind Test (prévente)", price: "Sur inscription" },
+        { label: "Soirée Mousse (prévente)", price: "8€" },
+        { label: "Soirée Mousse (sur place)", price: "12€" },
+      ],
+
+      // Programme jour par jour
+      program: [
+        {
+          day: "Lundi 14 Juillet",
+          items: [
+            { time: "14h00", title: "🎉 Ouverture & Happy Hours", description: "Début de la foire, ambiance garantie !" },
+            { time: "19h00", title: "🎧 DJ Set", description: "DJ Alcor aux platines" },
+          ]
+        },
+        {
+          day: "Mardi 15 Juillet",
+          items: [
+            { time: "15h00", title: "🎭 Défilé de mascottes", description: "" },
+            { time: "19h00", title: "🎤 Concert", description: "ElectroZickxx" },
+          ]
+        },
+        {
+          day: "Mercredi 16 Juillet",
+          items: [
+            { time: "17h00", title: "🎭 Match d'impro", description: "" },
+            { time: "19h00", title: "🎧 DJ Set", description: "Les Zanimos" },
+          ]
+        },
+        {
+          day: "Jeudi 17 Juillet",
+          items: [
+            { time: "17h00 & 20h00", title: "🎧 DJ Sets Jodognois", description: "" },
+            { time: "18h00", title: "🎤 Spectacle de Stand Up", description: "" },
+          ]
+        },
+        {
+          day: "Vendredi 18 Juillet",
+          items: [
+            { time: "17h00", title: "🎭 Défilé de mascottes", description: "" },
+            { time: "18h00", title: "🎧 DJ Set", description: "Le P'tit Seb" },
+            { time: "20h00", title: "🕺 Blind Test 100% interactif", description: "Suivi de la soirée 80's & 90's – réservation recommandée" },
+          ]
+        },
+        {
+          day: "Samedi 19 Juillet",
+          items: [
+            { time: "17h00", title: "🎈 Activités pour enfants", description: "" },
+            { time: "19h00", title: "🎧 DJ Set", description: "Léo Carbo" },
+            { time: "21h00", title: "🫧 Méga Soirée Mousse", description: "8€ prévente / 12€ sur place – billetterie disponible en ligne" },
+          ]
+        },
+        {
+          day: "Dimanche 20 Juillet",
+          items: [
+            { time: "14h00", title: "🃏 Tournoi de belote", description: "Inscription sur place" },
+          ]
+        },
+        {
+          day: "Lundi 21 Juillet 🇧🇪",
+          items: [
+            { time: "14h00", title: "🎸 Concert", description: "" },
+            { time: "17h00", title: "🍻 Apéro Fête Nationale", description: "" },
+          ]
+        },
+      ],
+
+      // Détails pratiques
+      details: [
+        { label: "📅 Horaires", value: "Chaque jour 12h–21h (lun. 14 à partir de 14h, dim. jusqu'à 19h)" },
+        { label: "📍 Lieu", value: "Terrain de foot de Jodoigne" },
+        { label: "🎡 Activités", value: "Manèges, bar à cocktails & bières spéciales, stand maquillage enfants, food trucks" },
+        { label: "👨‍👩‍👧 Public", value: "Tous les âges" },
+      ],
+    },
   ],
+
 
   // --- GALERIES PHOTOS (Événements Passés) ---
   albums: [

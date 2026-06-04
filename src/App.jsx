@@ -4,9 +4,11 @@ import Footer from './components/layout/Footer';
 import Home from './pages/Home';
 import Agenda from './pages/Agenda';
 import Photos from './pages/Photos';
+import EventPage from './pages/EventPage';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('accueil');
+  const [currentEventId, setCurrentEventId] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -16,8 +18,9 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navigateTo = (page) => {
+  const navigateTo = (page, eventId = null) => {
     setCurrentPage(page);
+    setCurrentEventId(eventId);
     setIsMobileMenuOpen(false);
     window.scrollTo(0, 0);
   };
@@ -44,8 +47,9 @@ export default function App() {
 
       <main className="flex-1">
         {currentPage === 'accueil' && <Home navigateTo={navigateTo} />}
-        {currentPage === 'agenda' && <Agenda />}
+        {currentPage === 'agenda' && <Agenda navigateTo={navigateTo} />}
         {currentPage === 'photos' && <Photos />}
+        {currentPage === 'event' && <EventPage eventId={currentEventId} navigateTo={navigateTo} />}
       </main>
 
       <Footer navigateTo={navigateTo} />

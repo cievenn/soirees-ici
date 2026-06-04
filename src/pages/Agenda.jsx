@@ -4,7 +4,7 @@ import { DATA } from '../data';
 import { THEME } from '../theme';
 import Button from '../components/ui/Button';
 
-export default function Agenda() {
+export default function Agenda({ navigateTo }) {
   return (
     <div className="animate-fade-in bg-transparent min-h-screen pt-28 md:pt-40 pb-20 md:pb-32">
       <div className="max-w-[1200px] mx-auto px-4 md:px-6">
@@ -45,7 +45,7 @@ export default function Agenda() {
                     <Calendar className="text-[#ff007f] w-5 h-5 md:w-6 md:h-6 shrink-0"/> {event.date}
                   </li>
                 </ul>
-                <Button variant="primary" className="w-full sm:w-auto py-4 md:py-6 px-8 md:px-12 text-base md:text-lg shadow-[0_20px_50px_-10px_rgba(255,0,127,0.3)]">
+                <Button onClick={() => navigateTo('event', event.id)} variant="primary" className="w-full sm:w-auto py-4 md:py-6 px-8 md:px-12 text-base md:text-lg shadow-[0_20px_50px_-10px_rgba(255,0,127,0.3)]">
                   Billetterie
                 </Button>
               </div>
