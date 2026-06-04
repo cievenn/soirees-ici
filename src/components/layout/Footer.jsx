@@ -6,7 +6,7 @@ import Button from '../ui/Button';
 
 export default function Footer({ navigateTo }) {
   return (
-    <footer className="relative mx-4 md:mx-8 mb-4 mt-20 rounded-[2rem] overflow-hidden bg-[#050505]/95 backdrop-blur-3xl border border-white/10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.6)] py-12 group">
+    <footer className="relative mx-3 md:mx-4 lg:mx-8 mb-3 md:mb-4 mt-16 md:mt-20 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden bg-[#050505]/95 backdrop-blur-3xl border border-white/10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.6)] py-10 md:py-12 group">
       
       {/* Glow Effects */}
       <div className="absolute -top-[100px] left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-gradient-to-b from-[#ff007f]/30 to-transparent blur-[120px] opacity-30 group-hover:opacity-60 transition-opacity duration-1000"></div>
@@ -15,38 +15,38 @@ export default function Footer({ navigateTo }) {
       {/* Noise overlay */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-screen" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22/%3E%3C/svg%3E")'}}></div>
 
-      <div className="max-w-[1600px] mx-auto px-6 md:px-12 relative z-10">
+      <div className="max-w-[1600px] mx-auto px-5 md:px-12 relative z-10">
         
         {/* Top Section */}
-        <div className="flex flex-col lg:flex-row justify-between items-center gap-10 mb-12 border-b border-white/5 pb-12">
+        <div className="flex flex-col lg:flex-row justify-between items-center gap-8 md:gap-10 mb-10 md:mb-12 border-b border-white/5 pb-10 md:pb-12">
           <div className="text-center lg:text-left flex-1">
-            <span className="font-semibold uppercase tracking-[0.2em] text-[#ff007f] text-xs mb-4 inline-block py-1 px-4 rounded-full border border-[#ff007f]/20 bg-[#ff007f]/5 shadow-[0_0_15px_rgba(255,0,127,0.1)]">L'aventure continue</span>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display text-white leading-[1] tracking-tight mb-8 hover:skew-x-[-1deg] transition-transform duration-500 cursor-default">
+            <span className="font-semibold uppercase tracking-[0.2em] text-[#ff007f] text-xs mb-4 inline-block py-1 px-3 md:px-4 rounded-full border border-[#ff007f]/20 bg-[#ff007f]/5 shadow-[0_0_15px_rgba(255,0,127,0.1)]">L'aventure continue</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display text-white leading-[1] tracking-tight mb-6 md:mb-8 hover:skew-x-[-1deg] transition-transform duration-500 cursor-default">
               PRÊT POUR LA <span className={THEME.gradientText}>PROCHAINE ?</span>
             </h2>
             <div className="inline-block group/btn">
-              <Button onClick={() => navigateTo('agenda')} className="w-full sm:w-auto !bg-white !text-black hover:!bg-transparent hover:!text-white border border-transparent hover:border-[#ff007f] px-10 py-5 text-sm group-hover/btn:shadow-[0_0_30px_rgba(255,0,127,0.3)] !rounded-2xl">
+              <Button onClick={() => navigateTo('agenda')} className="w-full sm:w-auto !bg-white !text-black hover:!bg-transparent hover:!text-white border border-transparent hover:border-[#ff007f] px-8 md:px-10 py-4 md:py-5 text-sm group-hover/btn:shadow-[0_0_30px_rgba(255,0,127,0.3)] !rounded-2xl">
                 SÉCURISER MA PLACE 
                 <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform duration-300"/>
               </Button>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 lg:gap-12 flex-1 lg:justify-end">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-8 lg:gap-12 flex-1 lg:justify-end">
             <div className="relative group/logo">
               <div className="absolute inset-0 bg-white/10 rounded-full blur-[30px] opacity-0 group-hover/logo:opacity-100 transition-opacity duration-700"></div>
-              <img src={DATA.config.logoUrl} alt="Soirées Ici Logo" className="w-24 h-24 sm:w-32 sm:h-32 object-contain relative z-10 hover:rotate-6 hover:scale-105 transition-all duration-700 drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]" />
+              <img src={DATA.config.logoUrl} alt="Soirées Ici Logo" className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 object-contain relative z-10 hover:rotate-6 hover:scale-105 transition-all duration-700 drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]" />
             </div>
             
-            <div className="flex gap-3">
-              <a href={DATA.config.instagramUrl} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-white backdrop-blur-md hover:bg-[#ff007f] hover:border-[#ff007f] hover:scale-105 transition-all duration-300 shadow-lg group/icon">
-                <Instagram className="w-5 h-5 group-hover/icon:animate-bounce" />
+            <div className="flex flex-wrap justify-center gap-3">
+              <a href={DATA.config.instagramUrl} target="_blank" rel="noopener noreferrer" className="w-11 h-11 md:w-12 md:h-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-white backdrop-blur-md hover:bg-[#ff007f] hover:border-[#ff007f] hover:scale-105 transition-all duration-300 shadow-lg group/icon">
+                <Instagram className="w-4 h-4 md:w-5 md:h-5 group-hover/icon:animate-bounce" />
               </a>
-              <a href={DATA.config.facebookUrl} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-white backdrop-blur-md hover:bg-[#1877F2] hover:border-[#1877F2] hover:scale-105 transition-all duration-300 shadow-lg group/icon">
-                <Facebook className="w-5 h-5 group-hover/icon:animate-bounce" />
+              <a href={DATA.config.facebookUrl} target="_blank" rel="noopener noreferrer" className="w-11 h-11 md:w-12 md:h-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-white backdrop-blur-md hover:bg-[#1877F2] hover:border-[#1877F2] hover:scale-105 transition-all duration-300 shadow-lg group/icon">
+                <Facebook className="w-4 h-4 md:w-5 md:h-5 group-hover/icon:animate-bounce" />
               </a>
-              <a href={DATA.config.tiktokUrl} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-white backdrop-blur-md hover:bg-[#000000] hover:border-[#ffffff] hover:text-white hover:scale-105 transition-all duration-300 shadow-lg group/icon">
-                <svg className="w-5 h-5 group-hover/icon:animate-bounce" viewBox="0 0 24 24" fill="currentColor">
+              <a href={DATA.config.tiktokUrl} target="_blank" rel="noopener noreferrer" className="w-11 h-11 md:w-12 md:h-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-white backdrop-blur-md hover:bg-[#000000] hover:border-[#ffffff] hover:text-white hover:scale-105 transition-all duration-300 shadow-lg group/icon">
+                <svg className="w-4 h-4 md:w-5 md:h-5 group-hover/icon:animate-bounce" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
                 </svg>
               </a>
@@ -55,12 +55,12 @@ export default function Footer({ navigateTo }) {
         </div>
 
         {/* Bottom links */}
-        <div className="flex flex-col md:flex-row justify-between items-center text-xs font-medium text-gray-400 gap-6">
-          <div className="flex items-center gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-center text-xs font-medium text-gray-400 gap-4 md:gap-6">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-6">
             <a href="#" className="hover:text-white transition-colors">Mentions Légales</a>
-            <span className="w-1 h-1 rounded-full bg-white/20"></span>
+            <span className="w-1 h-1 rounded-full bg-white/20 hidden md:block"></span>
             <a href="#" className="hover:text-white transition-colors">Nous Contacter</a>
-            <span className="w-1 h-1 rounded-full bg-white/20"></span>
+            <span className="w-1 h-1 rounded-full bg-white/20 hidden md:block"></span>
             <a href="#" className="hover:text-white transition-colors">Devenir Partenaire</a>
           </div>
           
