@@ -139,7 +139,7 @@ function TicketWidget({ event }) {
         )}
 
         {/* Bouton CTA principal */}
-        {event.ticketUrl && (
+        {event.ticketUrl && !event.weezeventId && (
           <a
             href={event.ticketUrl}
             target="_blank"
@@ -233,7 +233,7 @@ export default function EventPage({ eventId, navigateTo }) {
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
 
           {/* ─ COLONNE GAUCHE (scrollable) ─ */}
-          <div className="w-full lg:flex-1 space-y-8 order-2 lg:order-1">
+          <div className="w-full lg:flex-1 space-y-8 order-1">
 
             {/* Description */}
             <div className="bg-white/80 backdrop-blur-sm rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 border border-black/5 shadow-sm">
@@ -312,25 +312,8 @@ export default function EventPage({ eventId, navigateTo }) {
           </div>
 
           {/* ─ COLONNE DROITE (sticky billetterie) ─ */}
-          <div className="w-full lg:w-[380px] xl:w-[420px] order-1 lg:order-2 lg:sticky lg:top-28">
-            {/* Mobile : version compacte du CTA en haut */}
-            <div className="lg:hidden mb-4">
-              {event.ticketUrl && (
-                <a
-                  href={event.ticketUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-3 w-full py-4 px-6 bg-gradient-to-r from-[#ff007f] to-[#ff7f00] text-white font-bold text-sm uppercase tracking-widest rounded-2xl shadow-lg"
-                >
-                  <Ticket className="w-4 h-4" />
-                  {event.ticketCTA || 'Acheter mon billet'}
-                </a>
-              )}
-            </div>
-            {/* Desktop : widget complet */}
-            <div className="hidden lg:block">
-              <TicketWidget event={event} />
-            </div>
+          <div id="billetterie-section" className="w-full lg:w-[380px] xl:w-[420px] order-2 lg:sticky lg:top-28">
+            <TicketWidget event={event} />
           </div>
 
         </div>
@@ -345,16 +328,20 @@ export default function EventPage({ eventId, navigateTo }) {
               {event.ticketPrices?.[0]?.price || 'Voir tarifs'}
             </div>
           </div>
-          {event.ticketUrl ? (
-            <a
-              href={event.ticketUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+          {event.ticketUrl || event.weezeventId ? (
+            <button
+              onClick={() => {
+                const el = document.getElementById('billetterie-section');
+                if (el) {
+                  const y = el.getBoundingClientRect().top + window.scrollY - 80;
+                  window.scrollTo({ top: y, behavior: 'smooth' });
+                }
+              }}
               className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-[#ff007f] to-[#ff7f00] text-white font-bold text-sm uppercase tracking-wider rounded-2xl shadow-lg"
             >
               <Ticket className="w-4 h-4" />
-              {event.ticketCTA || 'Acheter'}
-            </a>
+              {event.ticketCTA || 'Réserver ma place'}
+            </button>
           ) : (
             <div className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-gray-200 text-gray-500 font-bold text-sm uppercase tracking-wider rounded-2xl">
               Bientôt disponible
