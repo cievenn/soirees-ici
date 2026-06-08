@@ -3,6 +3,7 @@ export const DATA = {
   upcomingEvents: [
     {
       id: "new-year",
+      categorie: "clubbing",
       title: "NEW YEAR ALL IN 2026",
       date: "31 Décembre 2025",
       dateDetail: "31 déc. 2025, 22h00 – 1er janv. 2026, 05h00",
@@ -57,6 +58,7 @@ export const DATA = {
     },
     {
       id: "foire",
+      categorie: "semaine-foire",
       title: "LA SEMAINE FOIRE",
       date: "14 – 21 Juillet 2026",
       dateDetail: "Chaque jour de 12h à 21h (dim. jusqu'à 19h)",
