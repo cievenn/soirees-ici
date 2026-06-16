@@ -80,7 +80,7 @@ export default function Home({ navigateTo }) {
           <div className="lg:col-span-5 relative animate-fade-in-up hidden lg:block mt-12 lg:mt-0" style={{ animationDelay: '0.4s' }}>
             <div className="relative aspect-[3/4] rounded-t-[15rem] rounded-b-[3rem] overflow-hidden shadow-2xl group border-4 border-white">
               <img 
-                src="/achanger.png" 
+                src="/fonts/event-image/achanger.png" 
                 alt="Ambiance Soirée" 
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
               />
@@ -190,8 +190,8 @@ export default function Home({ navigateTo }) {
             
             <div className="flex-1 w-full relative z-10">
               <div className="grid grid-cols-2 gap-3 md:gap-4">
-                <img src={DATA.upcomingEvents[1]?.image1 || "/achanger.png"} alt="Foire 1" className="w-full h-40 sm:h-48 md:h-64 lg:h-72 object-cover rounded-[1.5rem] md:rounded-[2rem] transform translate-y-6 md:translate-y-12 border border-white/10 shadow-2xl" />
-                <img src={DATA.upcomingEvents[1]?.image2 || "/achanger.png"} alt="Foire 2" className="w-full h-40 sm:h-48 md:h-64 lg:h-72 object-cover rounded-[1.5rem] md:rounded-[2rem] border border-white/10 shadow-2xl" />
+                <img src={DATA.upcomingEvents[1]?.image1 || "/fonts/event-image/achanger.png"} alt="Foire 1" className="w-full h-40 sm:h-48 md:h-64 lg:h-72 object-cover rounded-[1.5rem] md:rounded-[2rem] transform translate-y-6 md:translate-y-12 border border-white/10 shadow-2xl" />
+                <img src={DATA.upcomingEvents[1]?.image2 || "/fonts/event-image/achanger.png"} alt="Foire 2" className="w-full h-40 sm:h-48 md:h-64 lg:h-72 object-cover rounded-[1.5rem] md:rounded-[2rem] border border-white/10 shadow-2xl" />
               </div>
             </div>
           </div>
