@@ -49,24 +49,24 @@ export function getDb() {
  */
 function seedEquipment() {
   const equipments = [
-    { name: 'Tonnelle PopUp - 3x3',              price: '25€',       caution: '50€ de caution par tonnelle',                      image: '/fonts/location/tonnelle-popup-3x3.jpeg',           stock_total: 4 },
-    { name: 'Tonnelle PopUp - 3x6',              price: '45€',       caution: '50€ de caution par tonnelle',                      image: '/fonts/location/tonnelle-popup-3x6.jpeg',           stock_total: 2 },
-    { name: 'Gobelets 25cl',                     price: 'Sur devis', caution: '',                                                 image: '/fonts/location/gobelet-reutilisable-25cl.png',     stock_total: 500 },
-    { name: 'Gobelets 30cl',                     price: 'Sur devis', caution: '',                                                 image: '/fonts/location/gobelet-reutilisable-30cl.png',     stock_total: 500 },
-    { name: 'Canon à chaleur (capacité 250m²)',  price: '75€',       caution: '100€ de caution par canon (sans combustible)',      image: '/fonts/location/canon-a-chaleur-250m2.png',         stock_total: 2 },
-    { name: 'Mange debout',                      price: '5€',        caution: '10€ de caution. Nappe noire: 2€ par pièce',        image: '/fonts/location/mange-debout-nappe-noire.png',      stock_total: 20 },
-    { name: 'Verre à Vin réutilisable',          price: 'Sur devis', caution: '',                                                 image: '/fonts/location/verre-a-vin-reutilisable.png',      stock_total: 200 },
-    { name: 'Verre à cocktail réutilisable',     price: 'Sur devis', caution: '',                                                 image: '/fonts/location/verre-a-cocktail-reutilisable.png', stock_total: 200 },
-    { name: 'Bar en Palette modulable',          price: '150€',      caution: '25€ de caution par palette',                       image: '/fonts/location/bar-en-palette-modulable.png',      stock_total: 3 },
-    { name: 'Congélateur Bahut grand',           price: '50€',       caution: '100€ de caution',                                  image: '/fonts/location/congelateur-bahut-grand.png',       stock_total: 2 },
-    { name: 'Congélateur Bahut petit',           price: '25€',       caution: '50€ de caution',                                   image: '/fonts/location/congelateur-bahut-petit.png',       stock_total: 2 },
-    { name: 'Kicker',                            price: '30€',       caution: '50€ de caution',                                   image: '/fonts/location/kicker-baby-foot.png',              stock_total: 1 },
-    { name: 'Contrôleur FLX 6 GT PIONEER',       price: '250€',      caution: '250€ de caution',                                  image: '/fonts/location/controleur-pioneer-flx6-gt.png',    stock_total: 1 },
+    { name: 'Tonnelle PopUp - 3x3',              price: '25€',       price_cents: 2500,  caution: '50€ de caution par tonnelle',                      image: '/fonts/location/tonnelle-popup-3x3.jpeg',           stock_total: 4 },
+    { name: 'Tonnelle PopUp - 3x6',              price: '45€',       price_cents: 4500,  caution: '50€ de caution par tonnelle',                      image: '/fonts/location/tonnelle-popup-3x6.jpeg',           stock_total: 2 },
+    { name: 'Gobelets 25cl',                     price: '0.10€',     price_cents: 10,    caution: '',                                                 image: '/fonts/location/gobelet-reutilisable-25cl.png',     stock_total: 500 },
+    { name: 'Gobelets 30cl',                     price: '0.15€',     price_cents: 15,    caution: '',                                                 image: '/fonts/location/gobelet-reutilisable-30cl.png',     stock_total: 500 },
+    { name: 'Canon à chaleur (capacité 250m²)',  price: '75€',       price_cents: 7500,  caution: '100€ de caution par canon (sans combustible)',      image: '/fonts/location/canon-a-chaleur-250m2.png',         stock_total: 2 },
+    { name: 'Mange debout',                      price: '5€',        price_cents: 500,   caution: '10€ de caution. Nappe noire: 2€ par pièce',        image: '/fonts/location/mange-debout-nappe-noire.png',      stock_total: 20 },
+    { name: 'Verre à Vin réutilisable',          price: '0.25€',     price_cents: 25,    caution: '',                                                 image: '/fonts/location/verre-a-vin-reutilisable.png',      stock_total: 200 },
+    { name: 'Verre à cocktail réutilisable',     price: '0.20€',     price_cents: 20,    caution: '',                                                 image: '/fonts/location/verre-a-cocktail-reutilisable.png', stock_total: 200 },
+    { name: 'Bar en Palette modulable',          price: '150€',      price_cents: 15000, caution: '25€ de caution par palette',                       image: '/fonts/location/bar-en-palette-modulable.png',      stock_total: 3 },
+    { name: 'Congélateur Bahut grand',           price: '50€',       price_cents: 5000,  caution: '100€ de caution',                                  image: '/fonts/location/congelateur-bahut-grand.png',       stock_total: 2 },
+    { name: 'Congélateur Bahut petit',           price: '25€',       price_cents: 2500,  caution: '50€ de caution',                                   image: '/fonts/location/congelateur-bahut-petit.png',       stock_total: 2 },
+    { name: 'Kicker',                            price: '30€',       price_cents: 3000,  caution: '50€ de caution',                                   image: '/fonts/location/kicker-baby-foot.png',              stock_total: 1 },
+    { name: 'Contrôleur FLX 6 GT PIONEER',       price: '250€',      price_cents: 25000, caution: '250€ de caution',                                  image: '/fonts/location/controleur-pioneer-flx6-gt.png',    stock_total: 1 },
   ];
 
   const insertStmt = db.prepare(`
-    INSERT OR IGNORE INTO equipment (name, price, caution, image, stock_total)
-    VALUES (@name, @price, @caution, @image, @stock_total)
+    INSERT OR IGNORE INTO equipment (name, price, price_cents, caution, image, stock_total)
+    VALUES (@name, @price, @price_cents, @caution, @image, @stock_total)
   `);
 
   const insertMany = db.transaction((items) => {

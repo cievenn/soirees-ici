@@ -28,6 +28,14 @@ const STATUS_CONFIG = {
     textColor: 'text-amber-400',
     icon: Clock,
   },
+  AWAITING_PAYMENT: {
+    label: 'Paiement attendu',
+    color: 'from-blue-400 to-indigo-400',
+    bgColor: 'bg-blue-400/10',
+    borderColor: 'border-blue-400/30',
+    textColor: 'text-blue-300',
+    icon: Clock,
+  },
   APPROVED: {
     label: 'Approuvée',
     color: 'from-emerald-500 to-green-500',
@@ -71,7 +79,7 @@ const STATUS_CONFIG = {
 };
 
 // ─── Timeline des statuts ───────────────────────────────────────────
-const TIMELINE_STEPS = ['PENDING', 'APPROVED', 'ACTIVE', 'RETURNED'];
+const TIMELINE_STEPS = ['PENDING', 'AWAITING_PAYMENT', 'APPROVED', 'ACTIVE', 'RETURNED'];
 
 function StatusTimeline({ currentStatus }) {
   const isRejected = currentStatus === 'REJECTED';
@@ -499,14 +507,14 @@ export default function ValidateOrder() {
                       onClick={() => setConfirmAction({
                         fn: approveOrder,
                         name: 'approve',
-                        message: '✅ Voulez-vous approuver cette commande ? Le stock sera réservé immédiatement.',
+                        message: '✅ Voulez-vous approuver cette commande ? Un lien de paiement Stripe de 24h sera envoyé au client et le stock sera temporairement réservé.',
                         buttonClass: 'bg-emerald-500 hover:bg-emerald-600',
                       })}
                       disabled={actionLoading}
                       className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-emerald-500 to-green-500 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-emerald-500/20 transition-all disabled:opacity-50"
                     >
                       <ShieldCheck className="w-5 h-5" />
-                      Approuver la commande
+                      Approuver (Envoyer lien de paiement)
                     </button>
                     <button
                       onClick={() => setConfirmAction({
@@ -522,6 +530,16 @@ export default function ValidateOrder() {
                       Rejeter la commande
                     </button>
                   </>
+                )}
+
+                {/* AWAITING_PAYMENT → En attente du paiement */}
+                {order.status === 'AWAITING_PAYMENT' && (
+                  <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+                    <p className="text-blue-300 text-sm font-medium flex items-center justify-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      En attente du paiement du client. La réservation expire le {order.payment_deadline ? formatDate(order.payment_deadline) : 'dans 24h'}.
+                    </p>
+                  </div>
                 )}
 
                 {/* APPROVED → Annuler (24h) / Confirmer retrait */}

@@ -122,7 +122,7 @@ export function releaseStock(orderId) {
 export function getAllEquipmentWithStock() {
   const db = getDb();
   return db.prepare(`
-    SELECT id, name, price, caution, image, stock_total, stock_reserved,
+    SELECT id, name, price, price_cents, caution, image, stock_total, stock_reserved,
            (stock_total - stock_reserved) as stock_available
     FROM equipment
     ORDER BY id

@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS equipment (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT UNIQUE NOT NULL,
   price TEXT NOT NULL,
+  price_cents INTEGER DEFAULT 0,
   caution TEXT DEFAULT '',
   image TEXT DEFAULT '',
   stock_total INTEGER NOT NULL DEFAULT 0,
@@ -18,9 +19,11 @@ CREATE TABLE IF NOT EXISTS equipment (
 -- Commandes de location
 CREATE TABLE IF NOT EXISTS orders (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  status TEXT NOT NULL DEFAULT 'PENDING' CHECK(status IN ('PENDING', 'APPROVED', 'REJECTED', 'ACTIVE', 'RETURNED', 'OVERDUE')),
+  status TEXT NOT NULL DEFAULT 'PENDING' CHECK(status IN ('PENDING', 'AWAITING_PAYMENT', 'APPROVED', 'REJECTED', 'ACTIVE', 'RETURNED', 'OVERDUE')),
   token_secret TEXT NOT NULL UNIQUE,
   token_used INTEGER DEFAULT 0,
+  stripe_session_id TEXT,
+  payment_deadline TEXT,
   client_name TEXT NOT NULL,
   client_email TEXT NOT NULL,
   client_phone TEXT NOT NULL,

@@ -8,6 +8,8 @@ import { initCronJobs } from './services/cronService.js';
 import ordersRouter from './routes/orders.js';
 import equipmentRouter from './routes/equipment.js';
 
+import stripeRouter from './routes/stripe.js';
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -18,6 +20,10 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
+
+// Stripe webhook nécessite le raw body, il doit être défini avant express.json
+app.use('/api/stripe', stripeRouter);
+
 app.use(express.json({ limit: '1mb' }));
 
 // Request logging

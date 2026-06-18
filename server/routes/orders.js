@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { getDb } from '../db/database.js';
 import { generateToken, validateToken, markTokenUsed, isWithinModificationWindow } from '../services/tokenService.js';
 import { checkStockAvailability, reserveStock, releaseStock } from '../services/stockService.js';
-import { sendClientConfirmation, sendAdminValidation, sendClientThankYou } from '../services/emailService.js';
+import { sendClientConfirmation, sendAdminValidation, sendClientThankYou, sendPaymentLink } from '../services/emailService.js';
+import { createCheckoutSession } from '../services/stripeService.js';
 
 const router = Router();
 
@@ -142,6 +143,7 @@ router.get('/:id/validate', (req, res) => {
         created_at: order.created_at,
         approved_at: order.approved_at,
         modification_deadline: order.modification_deadline,
+        payment_deadline: order.payment_deadline,
         pickup_date: order.pickup_date,
         return_date: order.return_date,
         token_used: !!order.token_used,
@@ -157,9 +159,9 @@ router.get('/:id/validate', (req, res) => {
 });
 
 // ============================================================
-// PUT /api/orders/:id/approve — Approuver la commande
+// PUT /api/orders/:id/approve — Approuver la commande (et générer lien de paiement)
 // ============================================================
-router.put('/:id/approve', (req, res) => {
+router.put('/:id/approve', async (req, res) => {
   try {
     const { id } = req.params;
     const { token } = req.query;
@@ -177,7 +179,10 @@ router.put('/:id/approve', (req, res) => {
 
     // Vérifier le stock
     const items = db.prepare(`
-      SELECT equipment_id, quantity FROM order_items WHERE order_id = ?
+      SELECT oi.equipment_id, oi.equipment_name, oi.quantity, e.price_cents 
+      FROM order_items oi
+      JOIN equipment e ON e.id = oi.equipment_id
+      WHERE oi.order_id = ?
     `).all(order.id);
 
     const stockCheck = checkStockAvailability(items);
@@ -188,6 +193,9 @@ router.put('/:id/approve', (req, res) => {
       });
     }
 
+    // Générer la session Stripe Checkout
+    const session = await createCheckoutSession(order, items);
+
     // Transaction : réserver le stock et mettre à jour la commande
     const approve = db.transaction(() => {
       reserveStock(order.id);
@@ -196,21 +204,29 @@ router.put('/:id/approve', (req, res) => {
       const deadline = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().replace('T', ' ').split('.')[0];
 
       db.prepare(`
-        UPDATE orders SET status = 'APPROVED', approved_at = ?, modification_deadline = ?, updated_at = datetime('now')
+        UPDATE orders SET status = 'AWAITING_PAYMENT', stripe_session_id = ?, payment_deadline = ?, updated_at = datetime('now')
         WHERE id = ?
-      `).run(now, deadline, order.id);
+      `).run(session.sessionId, deadline, order.id);
 
       markTokenUsed(db, order.id);
 
       db.prepare(`
         INSERT INTO audit_log (order_id, action, details, ip_address)
-        VALUES (?, 'ORDER_APPROVED', ?, ?)
-      `).run(order.id, `Commande approuvée. Deadline modification: ${deadline}`, req.ip);
+        VALUES (?, 'ORDER_APPROVED_AWAITING_PAYMENT', ?, ?)
+      `).run(order.id, `Commande approuvée, en attente de paiement. Deadline: ${deadline}`, req.ip);
+
+      return deadline;
     });
 
-    approve();
+    const deadline = approve();
 
-    res.json({ success: true, message: 'Commande approuvée avec succès. Stock réservé.' });
+    // Envoyer l'email avec le lien de paiement
+    // Formater la deadline pour l'email
+    const deadlineDate = new Date(deadline + 'Z');
+    const deadlineStr = deadlineDate.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
+    sendPaymentLink(order, items, session.url, deadlineStr).catch(err => console.error('Email de paiement:', err.message));
+
+    res.json({ success: true, message: 'Commande approuvée. Lien de paiement généré et envoyé au client. Stock réservé temporairement.' });
 
   } catch (error) {
     console.error('Erreur approbation:', error);

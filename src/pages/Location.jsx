@@ -361,6 +361,13 @@ export default function Location() {
                   <textarea name="notes" value={formData.notes} onChange={handleInputChange} className="bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#ff007f] transition-colors resize-none h-24" placeholder="Précisions sur la livraison, questions..."></textarea>
                 </div>
 
+                <div className="bg-[#ff007f]/10 border border-[#ff007f]/20 rounded-xl p-4 mt-2">
+                  <p className="text-[#ff007f] text-sm leading-relaxed">
+                    <strong>Note importante :</strong> Si votre demande est acceptée, vous recevrez un lien de paiement par e-mail. 
+                    Vous aurez alors <strong>24h pour payer</strong> et bloquer définitivement le matériel.
+                  </p>
+                </div>
+
                 <Button 
                   type="submit" 
                   disabled={isSubmitting || submitSuccess}

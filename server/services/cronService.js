@@ -10,11 +10,59 @@ import { sendAdminReturnAlert } from './emailService.js';
 export function initCronJobs() {
   // Toutes les heures à la minute 0
   cron.schedule('0 * * * *', async () => {
-    console.log('⏰ Cron: Vérification des retours en attente...');
+    console.log('⏰ Cron: Vérification des retours en attente et paiements expirés...');
     await checkOverdueReturns();
+    await checkExpiredPayments();
   });
 
-  console.log('⏰ Cron jobs initialisés (vérification retours: toutes les heures)');
+  console.log('⏰ Cron jobs initialisés (vérification retours et paiements: toutes les heures)');
+}
+
+import { releaseStock } from './stockService.js';
+
+/**
+ * Vérifie les commandes AWAITING_PAYMENT dont le délai de 24h est dépassé.
+ * Annule la réservation, libère le stock, et passe en REJECTED.
+ */
+async function checkExpiredPayments() {
+  try {
+    const db = getDb();
+
+    const expiredOrders = db.prepare(`
+      SELECT id 
+      FROM orders 
+      WHERE status = 'AWAITING_PAYMENT' 
+        AND payment_deadline < datetime('now')
+    `).all();
+
+    if (expiredOrders.length === 0) return;
+
+    console.log(`⏰ Cron: ${expiredOrders.length} paiement(s) expiré(s) à annuler`);
+
+    const cancelTransaction = db.transaction(() => {
+      for (const order of expiredOrders) {
+        releaseStock(order.id);
+
+        db.prepare(`
+          UPDATE orders 
+          SET status = 'REJECTED', updated_at = datetime('now')
+          WHERE id = ?
+        `).run(order.id);
+
+        db.prepare(`
+          INSERT INTO audit_log (order_id, action, details, ip_address)
+          VALUES (?, 'PAYMENT_EXPIRED', 'Annulation automatique (délai de 24h dépassé)', 'System')
+        `).run(order.id);
+        
+        console.log(`✅ Paiement expiré pour #${order.id} : réservation annulée.`);
+      }
+    });
+
+    cancelTransaction();
+
+  } catch (error) {
+    console.error('❌ Erreur cron checkExpiredPayments:', error.message);
+  }
 }
 
 /**
