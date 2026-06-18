@@ -61,7 +61,7 @@ export default function Footer({ navigateTo }) {
             <span className="w-1 h-1 rounded-full bg-white/20 hidden md:block"></span>
             <a href="#" className="hover:text-white transition-colors">Nous Contacter</a>
             <span className="w-1 h-1 rounded-full bg-white/20 hidden md:block"></span>
-            <a href="#" className="hover:text-white transition-colors">Devenir Partenaire</a>
+            <button onClick={() => navigateTo('location')} className="hover:text-white transition-colors">Location Matériel</button>
           </div>
           
           <div className="text-center tracking-[0.1em] text-white/30 uppercase">

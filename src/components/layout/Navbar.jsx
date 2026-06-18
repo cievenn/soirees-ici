@@ -42,8 +42,8 @@ export default function Navbar({ currentPage, navigateTo, isScrolled, isMobileMe
 
         {/* Action */}
         <div className="hidden md:block">
-          <Button onClick={() => navigateTo('agenda')} variant="outline" className="!py-3 !px-6 !text-xs border-black/10 bg-white">
-            Espace Partenaire
+          <Button onClick={() => navigateTo('location')} variant="outline" className="!py-3 !px-6 !text-xs border-black/10 bg-white">
+            Location Matériel
           </Button>
         </div>
 
@@ -82,8 +82,8 @@ export default function Navbar({ currentPage, navigateTo, isScrolled, isMobileMe
               ))}
             </div>
             <div className="mt-8 pt-6 border-t border-black/5">
-              <Button onClick={() => navigateTo('agenda')} variant="outline" className="w-full !py-4 !text-sm border-black/10">
-                Espace Partenaire
+              <Button onClick={() => navigateTo('location')} variant="outline" className="w-full !py-4 !text-sm border-black/10">
+                Location Matériel
               </Button>
             </div>
           </div>

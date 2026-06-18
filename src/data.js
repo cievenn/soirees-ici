@@ -207,6 +207,87 @@ export const DATA = {
     }
   ],
 
+  equipments: [
+    {
+      name: "Tonnelle PopUp - 3x3",
+      price: "25€",
+      caution: "50€ de caution par tonnelle",
+      image: "/fonts/location/tonnelle-popup-3x3.jpeg"
+    },
+    {
+      name: "Tonnelle PopUp - 3x6",
+      price: "45€",
+      caution: "50€ de caution par tonnelle",
+      image: "/fonts/location/tonnelle-popup-3x6.jpeg"
+    },
+    {
+      name: "Gobelets 25cl",
+      price: "Sur devis",
+      caution: "",
+      image: "/fonts/location/gobelet-reutilisable-25cl.png"
+    },
+    {
+      name: "Gobelets 30cl",
+      price: "Sur devis",
+      caution: "",
+      image: "/fonts/location/gobelet-reutilisable-30cl.png"
+    },
+    {
+      name: "Canon à chaleur (capacité 250m²)",
+      price: "75€",
+      caution: "100€ de caution par canon (sans combustible)",
+      image: "/fonts/location/canon-a-chaleur-250m2.png"
+    },
+    {
+      name: "Mange debout",
+      price: "5€",
+      caution: "10€ de caution. Nappe noire: 2€ par pièce",
+      image: "/fonts/location/mange-debout-nappe-noire.png"
+    },
+    {
+      name: "Verre à Vin réutilisable",
+      price: "Sur devis",
+      caution: "",
+      image: "/fonts/location/verre-a-vin-reutilisable.png"
+    },
+    {
+      name: "Verre à cocktail réutilisable",
+      price: "Sur devis",
+      caution: "",
+      image: "/fonts/location/verre-a-cocktail-reutilisable.png"
+    },
+    {
+      name: "Bar en Palette modulable",
+      price: "150€",
+      caution: "25€ de caution par palette",
+      image: "/fonts/location/bar-en-palette-modulable.png"
+    },
+    {
+      name: "Congélateur Bahut grand",
+      price: "50€",
+      caution: "100€ de caution",
+      image: "/fonts/location/congelateur-bahut-grand.png"
+    },
+    {
+      name: "Congélateur Bahut petit",
+      price: "25€",
+      caution: "50€ de caution",
+      image: "/fonts/location/congelateur-bahut-petit.png"
+    },
+    {
+      name: "Kicker",
+      price: "30€",
+      caution: "50€ de caution",
+      image: "/fonts/location/kicker-baby-foot.png"
+    },
+    {
+      name: "Contrôleur FLX 6 GT PIONEER",
+      price: "250€",
+      caution: "250€ de caution",
+      image: "/fonts/location/controleur-pioneer-flx6-gt.png"
+    }
+  ],
+
   config: {
     logoUrl: "/soireesicilogo.png",
     instagramUrl: "https://www.instagram.com/soirees_ici/",

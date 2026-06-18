@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { ArrowLeft, MapPin, Calendar, Clock, Ticket, ChevronDown, Music, Users, Info, ExternalLink } from 'lucide-react';
 import { DATA } from '../data';
 import { THEME } from '../theme';
@@ -162,7 +163,8 @@ function TicketWidget({ event }) {
 }
 
 // ─── Page principale ────────────────────────────────────────────────────────
-export default function EventPage({ eventId, navigateTo }) {
+export default function EventPage({ navigateTo }) {
+  const { eventId } = useParams();
   const event = DATA.upcomingEvents.find(e => e.id === eventId);
 
   if (!event) {
