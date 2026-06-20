@@ -47,6 +47,13 @@ export async function getEquipment(startDate = null, endDate = null) {
   return request(endpoint);
 }
 
+export async function checkCalendarAvailability(items, year, month) {
+  return request('/equipment/availability-calendar', {
+    method: 'POST',
+    body: JSON.stringify({ items, year, month }),
+  });
+}
+
 // ─── Commandes ──────────────────────────────────────────────
 
 export async function createOrder(orderData) {

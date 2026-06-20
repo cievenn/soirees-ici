@@ -26,20 +26,25 @@ export function initEmailService() {
  * @param {string|string[]} to - Destinataire(s)
  * @param {string} subject - Sujet
  * @param {string} html - Corps HTML
+ * @param {Array} attachments - Pièces jointes (optionnel)
  */
-async function sendEmail(to, subject, html) {
+async function sendEmail(to, subject, html, attachments = []) {
   if (!resend) {
     console.warn('⚠️ Service email non initialisé, email non envoyé:', subject);
     return;
   }
 
   try {
-    const data = await resend.emails.send({
+    const payload = {
       from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
-    });
+    };
+    if (attachments.length > 0) {
+      payload.attachments = attachments;
+    }
+    const data = await resend.emails.send(payload);
     
     if (data.error) {
       throw new Error(data.error.message);
@@ -113,7 +118,27 @@ export async function sendPaymentLink(order, items, paymentUrl, deadlineStr) {
  */
 export async function sendClientPaymentConfirmation(order, items, invoicePdfUrl) {
   const { subject, html } = clientPaymentConfirmationTemplate(order, items, invoicePdfUrl);
-  return sendEmail(order.client_email, subject, html);
+  
+  let attachments = [];
+  if (invoicePdfUrl) {
+    try {
+      const response = await fetch(invoicePdfUrl);
+      if (response.ok) {
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        attachments.push({
+          filename: `Facture_Soirees_Ici_${order.id}.pdf`,
+          content: buffer
+        });
+      } else {
+        console.warn(`⚠️ Impossible de télécharger le PDF de la facture (Status: ${response.status})`);
+      }
+    } catch (err) {
+      console.error('❌ Erreur lors du téléchargement du PDF de la facture :', err.message);
+    }
+  }
+
+  return sendEmail(order.client_email, subject, html, attachments);
 }
 
 /**

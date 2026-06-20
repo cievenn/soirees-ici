@@ -48,6 +48,7 @@ function getReservedQuantity(equipmentId, startDate, endDate, excludeOrderId = n
 export function checkStockAvailability(items, startDate, endDate, excludeOrderId = null) {
   const db = getDb();
   const unavailable = [];
+  const constrained = [];
 
   for (const item of items) {
     const equipment = db.prepare(`
@@ -72,14 +73,25 @@ export function checkStockAvailability(items, startDate, endDate, excludeOrderId
         name: equipment.name,
         requested: item.quantity,
         available: Math.max(0, available),
+        stock_total: equipment.stock_total,
         reason: `Stock insuffisant pour la période du ${startDate} au ${endDate}: ${Math.max(0, available)} disponible(s), ${item.quantity} demandé(s)`
+      });
+    } else if (available < equipment.stock_total) {
+      constrained.push({
+        equipment_id: item.equipment_id,
+        name: equipment.name,
+        requested: item.quantity,
+        available: Math.max(0, available),
+        stock_total: equipment.stock_total,
+        reason: `Stock réduit : plus que ${Math.max(0, available)} disponible(s) sur ${equipment.stock_total}`
       });
     }
   }
 
   return {
     available: unavailable.length === 0,
-    unavailable
+    unavailable,
+    constrained
   };
 }
 
@@ -102,24 +114,32 @@ export function getAllEquipmentWithStock(startDate = null, endDate = null) {
     ORDER BY id
   `).all();
 
+  const today = new Date().toISOString().split('T')[0];
+
   if (startDate && endDate) {
-    // Calculer la disponibilité dynamiquement pour chaque équipement
+    // Calculer la disponibilité dynamiquement pour les dates sélectionnées
     return equipments.map(eq => {
       const reserved = getReservedQuantity(eq.id, startDate, endDate);
+      const reservedToday = getReservedQuantity(eq.id, today, today);
       return {
         ...eq,
         stock_reserved: reserved,
-        stock_available: Math.max(0, eq.stock_total - reserved)
+        stock_available: Math.max(0, eq.stock_total - reserved),
+        stock_available_today: Math.max(0, eq.stock_total - reservedToday)
       };
     });
   }
 
-  // Sans dates : vue catalogue, tout est potentiellement disponible
-  return equipments.map(eq => ({
-    ...eq,
-    stock_reserved: 0,
-    stock_available: eq.stock_total
-  }));
+  // Sans dates : le stock global est considéré "disponible" pour permettre l'ajout au panier.
+  return equipments.map(eq => {
+    const reservedToday = getReservedQuantity(eq.id, today, today);
+    return {
+      ...eq,
+      stock_reserved: 0,
+      stock_available: eq.stock_total,
+      stock_available_today: Math.max(0, eq.stock_total - reservedToday)
+    };
+  });
 }
 
 /**
@@ -135,4 +155,45 @@ export function updateStockTotal(equipmentId, newTotal) {
   if (newTotal < 0) throw new Error('Le stock total ne peut pas être négatif');
 
   db.prepare('UPDATE equipment SET stock_total = ? WHERE id = ?').run(newTotal, equipmentId);
+}
+
+/**
+ * Retourne le statut des jours (indisponible ou restreint) pour une liste d'articles dans un mois donné.
+ * @param {Array} items - [{equipment_id, quantity}]
+ * @param {number} year 
+ * @param {number} month (1-12)
+ * @returns {Array} Liste des dates avec leur statut (UNAVAILABLE ou CONSTRAINED) et détails
+ */
+export function getCalendarAvailability(items, year, month) {
+  if (!items || items.length === 0) return [];
+  
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const calendarData = [];
+  
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dayStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const check = checkStockAvailability(items, dayStr, dayStr);
+    
+    if (!check.available) {
+      // Regrouper tous les articles en rupture pour ce jour
+      const names = check.unavailable.map(u => u.name).join(', ');
+      calendarData.push({
+        date: dayStr,
+        status: 'UNAVAILABLE',
+        equipment_names: names,
+        details: check.unavailable
+      });
+    } else if (check.constrained && check.constrained.length > 0) {
+      // Articles dont le stock est réduit mais reste suffisant pour la commande
+      const names = check.constrained.map(u => u.name).join(', ');
+      calendarData.push({
+        date: dayStr,
+        status: 'CONSTRAINED',
+        equipment_names: names,
+        details: check.constrained
+      });
+    }
+  }
+  
+  return calendarData;
 }

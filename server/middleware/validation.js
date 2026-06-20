@@ -7,6 +7,14 @@ import { z } from 'zod';
  * Valide tous les champs clients, dates, et items du panier.
  */
 export const createOrderSchema = z.object({
+  client_type: z.enum(['PARTICULIER', 'ENTREPRISE'], {
+    errorMap: () => ({ message: "Le type de client doit être 'PARTICULIER' ou 'ENTREPRISE'." })
+  }),
+  company_name: z.string().trim().max(100, 'Le nom de l\'entreprise est trop long.').optional().nullable(),
+  vat_number: z.string().trim().max(50, 'Le numéro de TVA est trop long.').optional().nullable(),
+  event_type: z.string({ required_error: "Le type d'événement est requis." }).min(1, "Le type d'événement est requis."),
+  event_type_other: z.string().trim().max(100, 'La précision de l\'événement est trop longue.').optional().nullable(),
+
   client_name: z
     .string({ required_error: 'Le nom est requis.' })
     .trim()
@@ -69,12 +77,23 @@ export const createOrderSchema = z.object({
     .min(1, 'Le panier doit contenir au moins un article.'),
 }).refine(
   (data) => {
-    const start = new Date(data.start_date);
-    const end = new Date(data.end_date);
-    return end > start;
+    if (data.client_type === 'ENTREPRISE' && (!data.company_name || data.company_name.trim() === '')) {
+      return false;
+    }
+    return true;
   },
   {
-    message: 'La date de fin doit être postérieure à la date de début.',
+    message: "Le nom de l'entreprise est requis pour les clients professionnels.",
+    path: ['company_name'],
+  }
+).refine(
+  (data) => {
+    const start = new Date(data.start_date);
+    const end = new Date(data.end_date);
+    return end >= start;
+  },
+  {
+    message: 'La date de fin ne peut pas être antérieure à la date de début.',
     path: ['end_date'],
   }
 );

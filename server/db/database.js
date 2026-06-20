@@ -46,6 +46,12 @@ function runMigrations() {
     { table: 'orders', column: 'total_rental_cents', sql: 'ALTER TABLE orders ADD COLUMN total_rental_cents INTEGER DEFAULT 0' },
     { table: 'orders', column: 'total_deposit_cents', sql: 'ALTER TABLE orders ADD COLUMN total_deposit_cents INTEGER DEFAULT 0' },
     { table: 'orders', column: 'stripe_invoice_id', sql: 'ALTER TABLE orders ADD COLUMN stripe_invoice_id TEXT' },
+    // Orders: Particulier / Entreprise
+    { table: 'orders', column: 'client_type', sql: "ALTER TABLE orders ADD COLUMN client_type TEXT NOT NULL DEFAULT 'PARTICULIER'" },
+    { table: 'orders', column: 'company_name', sql: 'ALTER TABLE orders ADD COLUMN company_name TEXT' },
+    { table: 'orders', column: 'vat_number', sql: 'ALTER TABLE orders ADD COLUMN vat_number TEXT' },
+    { table: 'orders', column: 'event_type', sql: 'ALTER TABLE orders ADD COLUMN event_type TEXT' },
+    { table: 'orders', column: 'event_type_other', sql: 'ALTER TABLE orders ADD COLUMN event_type_other TEXT' },
     // Equipment: caution en centimes
     { table: 'equipment', column: 'caution_cents', sql: 'ALTER TABLE equipment ADD COLUMN caution_cents INTEGER DEFAULT 0' },
     // Order items: prix et caution en centimes
@@ -99,17 +105,17 @@ function parseCautionCents(cautionText) {
  */
 function seedEquipment() {
   const equipments = [
-    { name: 'Tonnelle PopUp - 3x3',              price: '25€',       price_cents: 2500,  caution: '50€ de caution par tonnelle',                      caution_cents: 5000,  image: '/fonts/location/tonnelle-popup-3x3.jpeg',           stock_total: 4 },
+    { name: 'Tonnelle PopUp - 3x3',              price: '25€',       price_cents: 2500,  caution: '50€ de caution par tonnelle',                      caution_cents: 5000,  image: '/fonts/location/tonnelle-popup-3x3.jpeg',           stock_total: 2 },
     { name: 'Tonnelle PopUp - 3x6',              price: '45€',       price_cents: 4500,  caution: '50€ de caution par tonnelle',                      caution_cents: 5000,  image: '/fonts/location/tonnelle-popup-3x6.jpeg',           stock_total: 2 },
-    { name: 'Gobelets 25cl',                     price: '0.10€',     price_cents: 10,    caution: '',                                                 caution_cents: 0,     image: '/fonts/location/gobelet-reutilisable-25cl.png',     stock_total: 500 },
-    { name: 'Gobelets 30cl',                     price: '0.15€',     price_cents: 15,    caution: '',                                                 caution_cents: 0,     image: '/fonts/location/gobelet-reutilisable-30cl.png',     stock_total: 500 },
+    { name: 'Gobelets 25cl',                     price: '0.30€',     price_cents: 30,    caution: '',                                                 caution_cents: 0,     image: '/fonts/location/gobelet-reutilisable-25cl.png',     stock_total: 1000 },
+    { name: 'Gobelets 30cl',                     price: '0.30€',     price_cents: 30,    caution: '',                                                 caution_cents: 0,     image: '/fonts/location/gobelet-reutilisable-30cl.png',     stock_total: 1000 },
     { name: 'Canon à chaleur (capacité 250m²)',  price: '75€',       price_cents: 7500,  caution: '100€ de caution par canon (sans combustible)',      caution_cents: 10000, image: '/fonts/location/canon-a-chaleur-250m2.png',         stock_total: 2 },
-    { name: 'Mange debout',                      price: '5€',        price_cents: 500,   caution: '10€ de caution. Nappe noire: 2€ par pièce',        caution_cents: 1000,  image: '/fonts/location/mange-debout-nappe-noire.png',      stock_total: 20 },
-    { name: 'Verre à Vin réutilisable',          price: '0.25€',     price_cents: 25,    caution: '',                                                 caution_cents: 0,     image: '/fonts/location/verre-a-vin-reutilisable.png',      stock_total: 200 },
-    { name: 'Verre à cocktail réutilisable',     price: '0.20€',     price_cents: 20,    caution: '',                                                 caution_cents: 0,     image: '/fonts/location/verre-a-cocktail-reutilisable.png', stock_total: 200 },
-    { name: 'Bar en Palette modulable',          price: '150€',      price_cents: 15000, caution: '25€ de caution par palette',                       caution_cents: 2500,  image: '/fonts/location/bar-en-palette-modulable.png',      stock_total: 3 },
-    { name: 'Congélateur Bahut grand',           price: '50€',       price_cents: 5000,  caution: '100€ de caution',                                  caution_cents: 10000, image: '/fonts/location/congelateur-bahut-grand.png',       stock_total: 2 },
-    { name: 'Congélateur Bahut petit',           price: '25€',       price_cents: 2500,  caution: '50€ de caution',                                   caution_cents: 5000,  image: '/fonts/location/congelateur-bahut-petit.png',       stock_total: 2 },
+    { name: 'Mange debout',                      price: '5€',        price_cents: 500,   caution: '10€ de caution. Nappe noire: 2€ par pièce',        caution_cents: 1000,  image: '/fonts/location/mange-debout-nappe-noire.png',      stock_total: 10 },
+    { name: 'Verre à Vin réutilisable',          price: '0.70€',     price_cents: 70,    caution: '',                                                 caution_cents: 0,     image: '/fonts/location/verre-a-vin-reutilisable.png',      stock_total: 50 },
+    { name: 'Verre à cocktail réutilisable',     price: '0.70€',     price_cents: 70,    caution: '',                                                 caution_cents: 0,     image: '/fonts/location/verre-a-cocktail-reutilisable.png', stock_total: 50 },
+    { name: 'Bar en Palette modulable',          price: '150€',      price_cents: 15000, caution: '25€ de caution par palette',                       caution_cents: 2500,  image: '/fonts/location/bar-en-palette-modulable.png',      stock_total: 1 },
+    { name: 'Congélateur Bahut grand',           price: '50€',       price_cents: 5000,  caution: '100€ de caution',                                  caution_cents: 10000, image: '/fonts/location/congelateur-bahut-grand.png',       stock_total: 1 },
+    { name: 'Congélateur Bahut petit',           price: '25€',       price_cents: 2500,  caution: '50€ de caution',                                   caution_cents: 5000,  image: '/fonts/location/congelateur-bahut-petit.png',       stock_total: 1 },
     { name: 'Kicker',                            price: '30€',       price_cents: 3000,  caution: '50€ de caution',                                   caution_cents: 5000,  image: '/fonts/location/kicker-baby-foot.png',              stock_total: 1 },
     { name: 'Contrôleur FLX 6 GT PIONEER',       price: '250€',      price_cents: 25000, caution: '250€ de caution',                                  caution_cents: 25000, image: '/fonts/location/controleur-pioneer-flx6-gt.png',    stock_total: 1 },
   ];
@@ -119,9 +125,11 @@ function seedEquipment() {
     VALUES (@name, @price, @price_cents, @caution, @caution_cents, @image, @stock_total)
   `);
 
-  // Also update caution_cents for existing equipment that may not have it set
-  const updateCautionStmt = db.prepare(`
-    UPDATE equipment SET caution_cents = ? WHERE name = ? AND caution_cents = 0
+  // Mise à jour pour forcer les nouvelles valeurs sur les équipements existants
+  const updateStmt = db.prepare(`
+    UPDATE equipment 
+    SET price = @price, price_cents = @price_cents, caution = @caution, caution_cents = @caution_cents, stock_total = @stock_total 
+    WHERE name = @name
   `);
 
   const insertMany = db.transaction((items) => {
@@ -131,8 +139,8 @@ function seedEquipment() {
       if (result.changes > 0) {
         inserted++;
       } else {
-        // Equipment already exists — update caution_cents if missing
-        updateCautionStmt.run(item.caution_cents, item.name);
+        // L'équipement existe déjà : on met à jour les prix, cautions et stocks selon la nouvelle configuration
+        updateStmt.run(item);
       }
     }
     return inserted;

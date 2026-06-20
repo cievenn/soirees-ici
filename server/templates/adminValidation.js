@@ -42,8 +42,22 @@ export function adminValidationTemplate(order, items, validationUrl) {
           <div style="background-color: #FAFAFA; border: 1px solid #EEEEEE; border-radius: 16px; padding: 25px 20px 20px 20px;">
             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 15px; color: #333333; line-height: 1.6;">
               <tr>
-                <td width="30%" style="padding-bottom: 8px; color: #888888;">Nom</td>
-                <td width="70%" style="padding-bottom: 8px;"><strong>${order.client_name}</strong></td>
+                <td width="30%" style="padding-bottom: 8px; color: #888888;">Type</td>
+                <td width="70%" style="padding-bottom: 8px;"><strong>${order.client_type}</strong></td>
+              </tr>
+              ${order.client_type === 'ENTREPRISE' ? `
+              <tr>
+                <td style="padding-bottom: 8px; color: #888888;">Société</td>
+                <td style="padding-bottom: 8px;"><strong>${order.company_name}</strong></td>
+              </tr>
+              ${order.vat_number ? `
+              <tr>
+                <td style="padding-bottom: 8px; color: #888888;">TVA</td>
+                <td style="padding-bottom: 8px;"><strong>${order.vat_number}</strong></td>
+              </tr>` : ''}` : ''}
+              <tr>
+                <td style="padding-bottom: 8px; color: #888888;">Nom</td>
+                <td style="padding-bottom: 8px;"><strong>${order.client_name}</strong></td>
               </tr>
               <tr>
                 <td style="padding-bottom: 8px; color: #888888;">Email</td>
@@ -63,8 +77,12 @@ export function adminValidationTemplate(order, items, validationUrl) {
           <div style="background-color: #FAFAFA; border: 1px solid #EEEEEE; border-radius: 16px; padding: 25px 20px 20px 20px;">
             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 15px; color: #333333; line-height: 1.6;">
               <tr>
-                <td width="30%" style="padding-bottom: 8px; color: #888888;">Lieu</td>
-                <td width="70%" style="padding-bottom: 8px;"><strong>${order.event_location}</strong></td>
+                <td width="30%" style="padding-bottom: 8px; color: #888888;">Type</td>
+                <td width="70%" style="padding-bottom: 8px; text-transform: capitalize;"><strong>${order.event_type} ${order.event_type_other ? `(${order.event_type_other})` : ''}</strong></td>
+              </tr>
+              <tr>
+                <td style="padding-bottom: 8px; color: #888888;">Lieu</td>
+                <td style="padding-bottom: 8px;"><strong>${order.event_location}</strong></td>
               </tr>
               <tr>
                 <td style="padding-bottom: 8px; color: #888888;">Du</td>

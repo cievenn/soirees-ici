@@ -222,13 +222,13 @@ export const DATA = {
     },
     {
       name: "Gobelets 25cl",
-      price: "0.10€",
+      price: "0.30€",
       caution: "",
       image: "/fonts/location/gobelet-reutilisable-25cl.png"
     },
     {
       name: "Gobelets 30cl",
-      price: "0.15€",
+      price: "0.30€",
       caution: "",
       image: "/fonts/location/gobelet-reutilisable-30cl.png"
     },
@@ -246,13 +246,13 @@ export const DATA = {
     },
     {
       name: "Verre à Vin réutilisable",
-      price: "0.25€",
+      price: "0.70€",
       caution: "",
       image: "/fonts/location/verre-a-vin-reutilisable.png"
     },
     {
       name: "Verre à cocktail réutilisable",
-      price: "0.20€",
+      price: "0.70€",
       caution: "",
       image: "/fonts/location/verre-a-cocktail-reutilisable.png"
     },

@@ -23,7 +23,10 @@ function getRentalDays(startDate, endDate) {
 // ============================================================
 router.post('/', validateBody(createOrderSchema), async (req, res) => {
   try {
-    const { client_name, client_email, client_phone, event_location, start_date, end_date, notes, items } = req.body;
+    const { 
+      client_type, company_name, vat_number, event_type, event_type_other, 
+      client_name, client_email, client_phone, event_location, start_date, end_date, notes, items 
+    } = req.body;
 
     const db = getDb();
 
@@ -76,9 +79,15 @@ router.post('/', validateBody(createOrderSchema), async (req, res) => {
     // Créer la commande et les items dans une transaction
     const createOrder = db.transaction(() => {
       const orderResult = db.prepare(`
-        INSERT INTO orders (status, token_secret, client_name, client_email, client_phone, event_location, start_date, end_date, notes, total_rental_cents, total_deposit_cents)
-        VALUES ('PENDING', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).run(tokenSecret, client_name, client_email, client_phone, event_location, start_date, end_date, notes || '', totalRentalCents, totalDepositCents);
+        INSERT INTO orders (
+          status, token_secret, client_type, company_name, vat_number, event_type, event_type_other, 
+          client_name, client_email, client_phone, event_location, start_date, end_date, notes, total_rental_cents, total_deposit_cents
+        )
+        VALUES ('PENDING', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        tokenSecret, client_type, company_name || null, vat_number || null, event_type, event_type_other || null,
+        client_name, client_email, client_phone, event_location, start_date, end_date, notes || '', totalRentalCents, totalDepositCents
+      );
 
       const orderId = orderResult.lastInsertRowid;
 

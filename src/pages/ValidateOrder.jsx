@@ -351,6 +351,33 @@ export default function ValidateOrder() {
                 <div className="flex items-start gap-3">
                   <User className="w-4 h-4 text-white/30 mt-0.5 shrink-0" />
                   <div>
+                    <div className="text-[10px] text-white/40 uppercase tracking-wider font-semibold">Type</div>
+                    <div className="text-white font-semibold">{order.client_type || 'PARTICULIER'}</div>
+                  </div>
+                </div>
+                {order.client_type === 'ENTREPRISE' && (
+                  <>
+                    <div className="flex items-start gap-3">
+                      <User className="w-4 h-4 text-white/30 mt-0.5 shrink-0 opacity-0" />
+                      <div>
+                        <div className="text-[10px] text-white/40 uppercase tracking-wider font-semibold">Société</div>
+                        <div className="text-white font-semibold">{order.company_name}</div>
+                      </div>
+                    </div>
+                    {order.vat_number && (
+                      <div className="flex items-start gap-3">
+                        <User className="w-4 h-4 text-white/30 mt-0.5 shrink-0 opacity-0" />
+                        <div>
+                          <div className="text-[10px] text-white/40 uppercase tracking-wider font-semibold">TVA</div>
+                          <div className="text-white font-semibold">{order.vat_number}</div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+                <div className="flex items-start gap-3">
+                  <User className="w-4 h-4 text-white/30 mt-0.5 shrink-0" />
+                  <div>
                     <div className="text-[10px] text-white/40 uppercase tracking-wider font-semibold">Nom</div>
                     <div className="text-white font-semibold">{order.client_name}</div>
                   </div>
@@ -372,8 +399,15 @@ export default function ValidateOrder() {
                 <div className="flex items-start gap-3">
                   <MapPin className="w-4 h-4 text-white/30 mt-0.5 shrink-0" />
                   <div>
-                    <div className="text-[10px] text-white/40 uppercase tracking-wider font-semibold">Lieu</div>
+                    <div className="text-[10px] text-white/40 uppercase tracking-wider font-semibold">Lieu de l'événement</div>
                     <div className="text-white/80 text-sm">{order.event_location}</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Calendar className="w-4 h-4 text-white/30 mt-0.5 shrink-0" />
+                  <div>
+                    <div className="text-[10px] text-white/40 uppercase tracking-wider font-semibold">Type d'événement</div>
+                    <div className="text-white/80 text-sm capitalize">{order.event_type} {order.event_type_other ? `(${order.event_type_other})` : ''}</div>
                   </div>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAllEquipmentWithStock, updateStockTotal } from '../services/stockService.js';
+import { getAllEquipmentWithStock, updateStockTotal, getCalendarAvailability } from '../services/stockService.js';
 import { getDb } from '../db/database.js';
 
 const router = Router();
@@ -34,6 +34,29 @@ router.get('/', (req, res) => {
   } catch (error) {
     console.error('Erreur récupération équipement:', error);
     res.status(500).json({ error: 'Erreur interne.' });
+  }
+});
+
+// ============================================================
+// POST /api/equipment/availability-calendar
+// Retourne les statuts des dates (indisponible ou restreint) pour le calendrier
+// ============================================================
+router.post('/availability-calendar', (req, res) => {
+  try {
+    const { items, year, month } = req.body;
+    
+    if (!items || !Array.isArray(items)) {
+      return res.status(400).json({ error: 'Le champ items doit être un tableau valide.' });
+    }
+    if (!year || !month || month < 1 || month > 12) {
+      return res.status(400).json({ error: 'L\'année et le mois (1-12) sont requis.' });
+    }
+
+    const calendarData = getCalendarAvailability(items, parseInt(year, 10), parseInt(month, 10));
+    res.json({ success: true, calendarData });
+  } catch (error) {
+    console.error('Erreur disponibilité calendrier:', error);
+    res.status(500).json({ error: 'Erreur interne lors du calcul de disponibilité.' });
   }
 });
 
