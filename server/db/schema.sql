@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS equipment (
   price TEXT NOT NULL,
   price_cents INTEGER DEFAULT 0,
   caution TEXT DEFAULT '',
+  caution_cents INTEGER DEFAULT 0,
   image TEXT DEFAULT '',
   stock_total INTEGER NOT NULL DEFAULT 0,
   stock_reserved INTEGER NOT NULL DEFAULT 0,
@@ -23,6 +24,7 @@ CREATE TABLE IF NOT EXISTS orders (
   token_secret TEXT NOT NULL UNIQUE,
   token_used INTEGER DEFAULT 0,
   stripe_session_id TEXT,
+  stripe_invoice_id TEXT,
   payment_deadline TEXT,
   client_name TEXT NOT NULL,
   client_email TEXT NOT NULL,
@@ -31,6 +33,8 @@ CREATE TABLE IF NOT EXISTS orders (
   start_date TEXT NOT NULL,
   end_date TEXT NOT NULL,
   notes TEXT DEFAULT '',
+  total_rental_cents INTEGER DEFAULT 0,
+  total_deposit_cents INTEGER DEFAULT 0,
   approved_at TEXT,
   modification_deadline TEXT,
   pickup_date TEXT,
@@ -47,6 +51,8 @@ CREATE TABLE IF NOT EXISTS order_items (
   equipment_name TEXT NOT NULL,
   quantity INTEGER NOT NULL CHECK(quantity > 0),
   unit_price TEXT DEFAULT '',
+  unit_price_cents INTEGER DEFAULT 0,
+  caution_cents INTEGER DEFAULT 0,
   FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
   FOREIGN KEY (equipment_id) REFERENCES equipment(id)
 );
@@ -68,3 +74,7 @@ CREATE INDEX IF NOT EXISTS idx_orders_token ON orders(token_secret);
 CREATE INDEX IF NOT EXISTS idx_orders_end_date ON orders(end_date);
 CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
 CREATE INDEX IF NOT EXISTS idx_audit_order ON audit_log(order_id);
+
+-- Index pour les requêtes de chevauchement de dates (stock temporel)
+CREATE INDEX IF NOT EXISTS idx_orders_dates_status ON orders(status, start_date, end_date);
+CREATE INDEX IF NOT EXISTS idx_order_items_equipment ON order_items(equipment_id);

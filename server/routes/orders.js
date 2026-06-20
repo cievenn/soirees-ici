@@ -1,32 +1,29 @@
 import { Router } from 'express';
 import { getDb } from '../db/database.js';
 import { generateToken, validateToken, markTokenUsed, isWithinModificationWindow } from '../services/tokenService.js';
-import { checkStockAvailability, reserveStock, releaseStock } from '../services/stockService.js';
+import { checkStockAvailability } from '../services/stockService.js';
 import { sendClientConfirmation, sendAdminValidation, sendClientThankYou, sendPaymentLink } from '../services/emailService.js';
 import { createCheckoutSession } from '../services/stripeService.js';
+import { validateBody, createOrderSchema } from '../middleware/validation.js';
+import { differenceInCalendarDays } from 'date-fns';
 
 const router = Router();
+
+/**
+ * Calcule le nombre de jours de location (inclusif).
+ * Ex: du 2025-01-01 au 2025-01-03 = 3 jours
+ */
+function getRentalDays(startDate, endDate) {
+  const days = differenceInCalendarDays(new Date(endDate), new Date(startDate));
+  return Math.max(1, days); // Au moins 1 jour
+}
 
 // ============================================================
 // POST /api/orders — Créer une commande (client)
 // ============================================================
-router.post('/', async (req, res) => {
+router.post('/', validateBody(createOrderSchema), async (req, res) => {
   try {
     const { client_name, client_email, client_phone, event_location, start_date, end_date, notes, items } = req.body;
-
-    // Validation des champs requis
-    if (!client_name || !client_email || !client_phone || !event_location || !start_date || !end_date) {
-      return res.status(400).json({ error: 'Tous les champs obligatoires doivent être remplis.' });
-    }
-
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: 'Le panier est vide.' });
-    }
-
-    // Validation des dates
-    if (new Date(start_date) >= new Date(end_date)) {
-      return res.status(400).json({ error: 'La date de fin doit être postérieure à la date de début.' });
-    }
 
     const db = getDb();
 
@@ -39,47 +36,78 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Un ou plusieurs articles du panier sont invalides.' });
     }
 
+    // Vérifier la disponibilité du stock sur la période demandée
+    const stockCheck = checkStockAvailability(items, start_date, end_date);
+    if (!stockCheck.available) {
+      return res.status(409).json({
+        error: 'Stock insuffisant pour un ou plusieurs articles sur la période demandée.',
+        details: stockCheck.unavailable
+      });
+    }
+
+    // Calculer le nombre de jours de location
+    const rentalDays = getRentalDays(start_date, end_date);
+
+    // Calculer le total de la commande et la caution
+    let totalRentalCents = 0;
+    let totalDepositCents = 0;
+
+    const itemDetails = items.map(item => {
+      const equip = equipments.find(e => e.id === item.equipment_id);
+      const itemRentalCents = equip.price_cents * item.quantity * rentalDays;
+      const itemDepositCents = (equip.caution_cents || 0) * item.quantity;
+
+      totalRentalCents += itemRentalCents;
+      totalDepositCents += itemDepositCents;
+
+      return {
+        equipment_id: item.equipment_id,
+        equipment_name: equip.name,
+        quantity: item.quantity,
+        unit_price: equip.price,
+        unit_price_cents: equip.price_cents,
+        caution_cents: equip.caution_cents || 0,
+      };
+    });
+
     // Générer le token sécurisé
     const tokenSecret = generateToken();
 
     // Créer la commande et les items dans une transaction
     const createOrder = db.transaction(() => {
       const orderResult = db.prepare(`
-        INSERT INTO orders (status, token_secret, client_name, client_email, client_phone, event_location, start_date, end_date, notes)
-        VALUES ('PENDING', ?, ?, ?, ?, ?, ?, ?, ?)
-      `).run(tokenSecret, client_name, client_email, client_phone, event_location, start_date, end_date, notes || '');
+        INSERT INTO orders (status, token_secret, client_name, client_email, client_phone, event_location, start_date, end_date, notes, total_rental_cents, total_deposit_cents)
+        VALUES ('PENDING', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(tokenSecret, client_name, client_email, client_phone, event_location, start_date, end_date, notes || '', totalRentalCents, totalDepositCents);
 
       const orderId = orderResult.lastInsertRowid;
 
       const insertItem = db.prepare(`
-        INSERT INTO order_items (order_id, equipment_id, equipment_name, quantity, unit_price)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO order_items (order_id, equipment_id, equipment_name, quantity, unit_price, unit_price_cents, caution_cents)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `);
 
-      const orderItems = [];
-      for (const item of items) {
-        const equip = equipments.find(e => e.id === item.equipment_id);
-        insertItem.run(orderId, item.equipment_id, equip.name, item.quantity, equip.price);
-        orderItems.push({
-          equipment_id: item.equipment_id,
-          equipment_name: equip.name,
-          quantity: item.quantity,
-          unit_price: equip.price
-        });
+      for (const detail of itemDetails) {
+        insertItem.run(orderId, detail.equipment_id, detail.equipment_name, detail.quantity, detail.unit_price, detail.unit_price_cents, detail.caution_cents);
       }
 
       // Audit log
       db.prepare(`
         INSERT INTO audit_log (order_id, action, details, ip_address)
         VALUES (?, 'ORDER_CREATED', ?, ?)
-      `).run(orderId, `Commande créée par ${client_name} (${client_email})`, req.ip);
+      `).run(
+        orderId,
+        `Commande créée par ${client_name} (${client_email}) — ${rentalDays} jour(s), total location: ${(totalRentalCents / 100).toFixed(2)}€, caution: ${(totalDepositCents / 100).toFixed(2)}€`,
+        req.ip
+      );
 
-      return { orderId, orderItems };
+      return orderId;
     });
 
-    const { orderId, orderItems } = createOrder();
+    const orderId = createOrder();
 
     const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
+    const orderItems = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(orderId);
 
     // Envoyer les emails (async, ne bloque pas la réponse)
     sendClientConfirmation(order, orderItems).catch(err => console.error('Email client:', err.message));
@@ -88,7 +116,10 @@ router.post('/', async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Votre demande de location a bien été enregistrée.',
-      order_id: orderId
+      order_id: orderId,
+      rental_days: rentalDays,
+      total_rental: (totalRentalCents / 100).toFixed(2) + '€',
+      total_deposit: (totalDepositCents / 100).toFixed(2) + '€',
     });
 
   } catch (error) {
@@ -116,10 +147,9 @@ router.get('/:id/validate', (req, res) => {
       return res.status(403).json({ error: 'Accès refusé. Token invalide ou commande inexistante.' });
     }
 
-    // Récupérer les items de la commande
+    // Récupérer les items de la commande avec stock dynamique
     const items = db.prepare(`
-      SELECT oi.*, e.name as equipment_name, e.image, e.stock_total, e.stock_reserved,
-             (e.stock_total - e.stock_reserved) as stock_available
+      SELECT oi.*, e.name as equipment_name, e.image, e.stock_total
       FROM order_items oi
       JOIN equipment e ON e.id = oi.equipment_id
       WHERE oi.order_id = ?
@@ -140,6 +170,8 @@ router.get('/:id/validate', (req, res) => {
         start_date: order.start_date,
         end_date: order.end_date,
         notes: order.notes,
+        total_rental_cents: order.total_rental_cents,
+        total_deposit_cents: order.total_deposit_cents,
         created_at: order.created_at,
         approved_at: order.approved_at,
         modification_deadline: order.modification_deadline,
@@ -177,29 +209,29 @@ router.put('/:id/approve', async (req, res) => {
       return res.status(400).json({ error: `Impossible d'approuver une commande en statut "${order.status}".` });
     }
 
-    // Vérifier le stock
+    // Vérifier le stock sur la période de la commande
     const items = db.prepare(`
-      SELECT oi.equipment_id, oi.equipment_name, oi.quantity, e.price_cents 
+      SELECT oi.equipment_id, oi.equipment_name, oi.quantity, oi.unit_price_cents, oi.caution_cents,
+             e.price_cents
       FROM order_items oi
       JOIN equipment e ON e.id = oi.equipment_id
       WHERE oi.order_id = ?
     `).all(order.id);
 
-    const stockCheck = checkStockAvailability(items);
+    const stockCheck = checkStockAvailability(items, order.start_date, order.end_date);
     if (!stockCheck.available) {
       return res.status(409).json({
-        error: 'Stock insuffisant pour un ou plusieurs articles.',
+        error: 'Stock insuffisant pour un ou plusieurs articles sur la période.',
         details: stockCheck.unavailable
       });
     }
 
-    // Générer la session Stripe Checkout
-    const session = await createCheckoutSession(order, items);
+    // Générer la session Stripe Checkout avec le total calculé
+    const rentalDays = getRentalDays(order.start_date, order.end_date);
+    const session = await createCheckoutSession(order, items, rentalDays);
 
-    // Transaction : réserver le stock et mettre à jour la commande
+    // Transaction : mettre à jour la commande (plus de réservation de stock !)
     const approve = db.transaction(() => {
-      reserveStock(order.id);
-
       const now = new Date().toISOString().replace('T', ' ').split('.')[0];
       const deadline = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().replace('T', ' ').split('.')[0];
 
@@ -226,7 +258,7 @@ router.put('/:id/approve', async (req, res) => {
     const deadlineStr = deadlineDate.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
     sendPaymentLink(order, items, session.url, deadlineStr).catch(err => console.error('Email de paiement:', err.message));
 
-    res.json({ success: true, message: 'Commande approuvée. Lien de paiement généré et envoyé au client. Stock réservé temporairement.' });
+    res.json({ success: true, message: 'Commande approuvée. Lien de paiement généré et envoyé au client.' });
 
   } catch (error) {
     console.error('Erreur approbation:', error);
@@ -288,10 +320,8 @@ router.put('/:id/cancel', (req, res) => {
       return res.status(400).json({ error: 'La fenêtre de modification de 24h est expirée.' });
     }
 
-    // Transaction : libérer le stock et remettre en PENDING
+    // Transaction : remettre en PENDING (plus de libération de stock !)
     const cancel = db.transaction(() => {
-      releaseStock(order.id);
-
       db.prepare(`
         UPDATE orders SET status = 'PENDING', approved_at = NULL, modification_deadline = NULL, updated_at = datetime('now')
         WHERE id = ?
@@ -305,7 +335,7 @@ router.put('/:id/cancel', (req, res) => {
 
     cancel();
 
-    res.json({ success: true, message: 'Approbation annulée. Stock libéré. La commande repasse en attente.' });
+    res.json({ success: true, message: 'Approbation annulée. La commande repasse en attente.' });
 
   } catch (error) {
     console.error('Erreur annulation:', error);
@@ -368,10 +398,8 @@ router.put('/:id/return', async (req, res) => {
 
     const now = new Date().toISOString().replace('T', ' ').split('.')[0];
 
-    // Transaction : libérer le stock et marquer comme retourné
+    // Transaction : marquer comme retourné (plus de libération de stock !)
     const returnOrder = db.transaction(() => {
-      releaseStock(order.id);
-
       db.prepare(`
         UPDATE orders SET status = 'RETURNED', return_date = ?, updated_at = datetime('now') WHERE id = ?
       `).run(now, order.id);
@@ -379,7 +407,7 @@ router.put('/:id/return', async (req, res) => {
       db.prepare(`
         INSERT INTO audit_log (order_id, action, details, ip_address)
         VALUES (?, 'ORDER_RETURNED', ?, ?)
-      `).run(order.id, `Matériel retourné le ${now}. Stock réintégré.`, req.ip);
+      `).run(order.id, `Matériel retourné le ${now}. Disponibilité recalculée automatiquement.`, req.ip);
     });
 
     returnOrder();
@@ -388,7 +416,7 @@ router.put('/:id/return', async (req, res) => {
     const updatedOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(order.id);
     sendClientThankYou(updatedOrder).catch(err => console.error('Email remerciement:', err.message));
 
-    res.json({ success: true, message: 'Retour confirmé. Stock réintégré. Email de remerciement envoyé au client.' });
+    res.json({ success: true, message: 'Retour confirmé. Email de remerciement envoyé au client.' });
 
   } catch (error) {
     console.error('Erreur retour:', error);

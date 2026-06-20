@@ -22,12 +22,18 @@ export default function Location() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState(null);
 
-  // Charger l'équipement depuis l'API
+  // Date minimum = aujourd'hui (empêche la sélection de dates passées)
+  const today = new Date().toISOString().split('T')[0];
+
+  // Charger l'équipement depuis l'API (recharge quand les dates changent)
   useEffect(() => {
     async function loadEquipment() {
       try {
         setEquipmentLoading(true);
-        const data = await getEquipment();
+        // Si les deux dates sont renseignées, demander la disponibilité sur la période
+        const startDate = formData.startDate || null;
+        const endDate = formData.endDate || null;
+        const data = await getEquipment(startDate, endDate);
         setEquipment(data.equipment || []);
       } catch (err) {
         console.error('Erreur chargement équipement:', err);
@@ -48,7 +54,7 @@ export default function Location() {
       }
     }
     loadEquipment();
-  }, []);
+  }, [formData.startDate, formData.endDate]);
 
   const totalItems = Object.values(selection).reduce((a, b) => a + b, 0);
 
@@ -343,11 +349,11 @@ export default function Location() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs text-gray-400 uppercase tracking-wider font-semibold">Date de début</label>
-                    <input required type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} className="bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#ff007f] transition-colors" />
+                    <input required type="date" name="startDate" min={today} value={formData.startDate} onChange={handleInputChange} className="bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#ff007f] transition-colors" />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs text-gray-400 uppercase tracking-wider font-semibold">Date de fin</label>
-                    <input required type="date" name="endDate" value={formData.endDate} onChange={handleInputChange} className="bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#ff007f] transition-colors" />
+                    <input required type="date" name="endDate" min={formData.startDate || today} value={formData.endDate} onChange={handleInputChange} className="bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#ff007f] transition-colors" />
                   </div>
                 </div>
 

@@ -18,11 +18,10 @@ export function initCronJobs() {
   console.log('⏰ Cron jobs initialisés (vérification retours et paiements: toutes les heures)');
 }
 
-import { releaseStock } from './stockService.js';
-
 /**
  * Vérifie les commandes AWAITING_PAYMENT dont le délai de 24h est dépassé.
- * Annule la réservation, libère le stock, et passe en REJECTED.
+ * Passe en REJECTED — la disponibilité est recalculée automatiquement
+ * car les requêtes de stock excluent les commandes REJECTED.
  */
 async function checkExpiredPayments() {
   try {
@@ -41,7 +40,9 @@ async function checkExpiredPayments() {
 
     const cancelTransaction = db.transaction(() => {
       for (const order of expiredOrders) {
-        releaseStock(order.id);
+        // Plus besoin de releaseStock() — la disponibilité est dynamique !
+        // Le passage en REJECTED suffit : les requêtes de chevauchement
+        // n'incluent que les statuts AWAITING_PAYMENT, APPROVED, ACTIVE.
 
         db.prepare(`
           UPDATE orders 
@@ -51,10 +52,10 @@ async function checkExpiredPayments() {
 
         db.prepare(`
           INSERT INTO audit_log (order_id, action, details, ip_address)
-          VALUES (?, 'PAYMENT_EXPIRED', 'Annulation automatique (délai de 24h dépassé)', 'System')
+          VALUES (?, 'PAYMENT_EXPIRED', 'Annulation automatique (délai de 24h dépassé). Stock libéré automatiquement.', 'System')
         `).run(order.id);
         
-        console.log(`✅ Paiement expiré pour #${order.id} : réservation annulée.`);
+        console.log(`✅ Paiement expiré pour #${order.id} : commande rejetée, disponibilité recalculée.`);
       }
     });
 

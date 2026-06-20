@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import express from 'express';
-import stripe from '../services/stripeService.js';
+import stripe, { findOrCreateStripeCustomer, createAndFinalizeInvoice } from '../services/stripeService.js';
 import { getDb } from '../db/database.js';
 import { sendClientPaymentConfirmation, sendAdminPaymentAlert } from '../services/emailService.js';
 
@@ -48,8 +48,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 
       console.log(`✅ Paiement confirmé pour la commande #${orderId}`);
 
-      // Envoyer l'e-mail de confirmation (le même que l'ancien, pour dire c'est bon)
-      // Il faut récupérer l'order et les items pour l'email
+      // Récupérer l'order et les items pour l'email et la facture
       const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
       const items = db.prepare(`
         SELECT oi.*, e.name as equipment_name
@@ -58,7 +57,36 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         WHERE oi.order_id = ?
       `).all(orderId);
 
-      sendClientPaymentConfirmation(order, items).catch(err => console.error('Email confirmation finale (client):', err.message));
+      // Création et finalisation de la facture Stripe
+      let invoicePdfUrl = null;
+      if (!order.stripe_invoice_id) {
+        try {
+          const rentalDays = session.metadata.rental_days || 1;
+          const customer = await findOrCreateStripeCustomer(order.client_email, order.client_name);
+          const invoice = await createAndFinalizeInvoice(order, items, customer.id, rentalDays);
+          invoicePdfUrl = invoice.invoice_pdf;
+
+          db.prepare(`
+            UPDATE orders 
+            SET stripe_invoice_id = ?
+            WHERE id = ?
+          `).run(invoice.id, orderId);
+          console.log(`🧾 Facture Stripe générée: ${invoice.id}`);
+        } catch (invoiceErr) {
+          console.error(`❌ Erreur génération facture Stripe pour order #${orderId}:`, invoiceErr.message);
+        }
+      } else {
+        // La facture a déjà été générée lors d'un précédent appel du webhook
+        try {
+          const invoice = await stripe.invoices.retrieve(order.stripe_invoice_id);
+          invoicePdfUrl = invoice.invoice_pdf;
+        } catch (invoiceErr) {
+          console.error(`❌ Erreur récupération facture Stripe existante pour order #${orderId}:`, invoiceErr.message);
+        }
+      }
+
+      // Envoyer l'e-mail de confirmation avec le lien vers la facture PDF
+      sendClientPaymentConfirmation(order, items, invoicePdfUrl).catch(err => console.error('Email confirmation finale (client):', err.message));
       sendAdminPaymentAlert(order, items).catch(err => console.error('Email alerte paiement (admin):', err.message));
 
     } catch (err) {

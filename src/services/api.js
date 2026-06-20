@@ -39,8 +39,12 @@ async function request(endpoint, options = {}) {
 
 // ─── Équipement ─────────────────────────────────────────────
 
-export async function getEquipment() {
-  return request('/equipment');
+export async function getEquipment(startDate = null, endDate = null) {
+  let endpoint = '/equipment';
+  if (startDate && endDate) {
+    endpoint += `?start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`;
+  }
+  return request(endpoint);
 }
 
 // ─── Commandes ──────────────────────────────────────────────

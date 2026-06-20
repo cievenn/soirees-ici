@@ -4,13 +4,21 @@
  * @param {Array} items - Liste des articles
  * @returns {object} {subject, html}
  */
-export function clientPaymentConfirmationTemplate(order, items) {
+export function clientPaymentConfirmationTemplate(order, items, invoicePdfUrl) {
   const itemsRows = items.map(item => `
     <tr>
       <td style="padding-bottom: 8px;"><strong>${item.equipment_name}</strong></td>
       <td style="padding-bottom: 8px; color: #10B981; font-weight: bold; text-align: right;">x${item.quantity}</td>
     </tr>
   `).join('');
+
+  const totalPaid = ((order.total_rental_cents + order.total_deposit_cents) / 100).toFixed(2);
+
+  const invoiceButtonHtml = invoicePdfUrl ? `
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${invoicePdfUrl}" style="display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #ffffff; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 50px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">📄 Télécharger votre facture</a>
+        </div>
+  ` : '';
 
   return {
     subject: `✅ Paiement confirmé & Réservation validée — Soirées Ici (#${order.id})`,
@@ -32,8 +40,10 @@ export function clientPaymentConfirmationTemplate(order, items) {
         
         <p style="font-size: 17px; line-height: 1.6; color: #111111; margin-top: 0; margin-bottom: 30px; text-align: center;">
           Félicitations <strong style="color: #10B981; font-size: 18px;">${order.client_name}</strong>,<br>
-          Nous avons bien reçu votre paiement. Votre réservation pour le <strong>${order.start_date}</strong> est maintenant 100% garantie ! 🎉
+          Nous avons bien reçu votre paiement de <strong>${totalPaid}€</strong>. Votre réservation pour le <strong>${order.start_date}</strong> est maintenant 100% garantie ! 🎉
         </p>
+
+        ${invoiceButtonHtml}
 
         <!-- Section Event -->
         <div style="margin-bottom: 25px;">
@@ -60,7 +70,7 @@ export function clientPaymentConfirmationTemplate(order, items) {
             </table>
           </div>
         </div>
-        
+                
         <p style="font-size: 15px; color: #555555; line-height: 1.6; text-align: center; margin-top: 30px;">
           Nous vous contacterons très prochainement pour régler les détails logistiques (heure de retrait/livraison).<br>
           Merci de votre confiance ! 🥂

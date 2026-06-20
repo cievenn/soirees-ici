@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { clientConfirmationTemplate } from '../templates/clientConfirmation.js';
 import { adminValidationTemplate } from '../templates/adminValidation.js';
 import { adminReturnAlertTemplate } from '../templates/adminReturnAlert.js';
@@ -7,49 +7,46 @@ import { paymentLinkTemplate } from '../templates/paymentLink.js';
 import { clientPaymentConfirmationTemplate } from '../templates/clientPaymentConfirmation.js';
 import { adminPaymentAlertTemplate } from '../templates/adminPaymentAlert.js';
 
-let transporter;
+let resend;
 
 /**
- * Initialise le transporteur Nodemailer.
+ * Initialise le client Resend.
  */
 export function initEmailService() {
-  transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT, 10),
-    secure: process.env.SMTP_PORT === '465',
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-
-  // Vérification de la connexion SMTP
-  transporter.verify()
-    .then(() => console.log('📧 Service email connecté avec succès'))
-    .catch(err => console.warn('⚠️ Connexion SMTP échouée (les emails ne seront pas envoyés):', err.message));
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('⚠️ RESEND_API_KEY manquant, les emails ne seront pas envoyés.');
+    return;
+  }
+  resend = new Resend(process.env.RESEND_API_KEY);
+  console.log('📧 Service email (Resend) initialisé');
 }
 
 /**
- * Envoie un email.
+ * Envoie un email via Resend.
  * @param {string|string[]} to - Destinataire(s)
  * @param {string} subject - Sujet
  * @param {string} html - Corps HTML
  */
 async function sendEmail(to, subject, html) {
-  if (!transporter) {
+  if (!resend) {
     console.warn('⚠️ Service email non initialisé, email non envoyé:', subject);
     return;
   }
 
   try {
-    const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM || '"Soirées Ici" <noreply@soirees-ici.be>',
-      to: Array.isArray(to) ? to.join(', ') : to,
+    const data = await resend.emails.send({
+      from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+      to: Array.isArray(to) ? to : [to],
       subject,
       html,
     });
-    console.log(`📧 Email envoyé: ${subject} → ${to} (${info.messageId})`);
-    return info;
+    
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
+    
+    console.log(`📧 Email envoyé: ${subject} → ${to} (${data.data?.id})`);
+    return data;
   } catch (error) {
     console.error(`❌ Erreur envoi email "${subject}":`, error.message);
     throw error;
@@ -112,10 +109,10 @@ export async function sendPaymentLink(order, items, paymentUrl, deadlineStr) {
 }
 
 /**
- * Envoie l'email de confirmation au client suite au paiement Stripe.
+ * Envoie l'email de confirmation au client suite au paiement Stripe, incluant la facture.
  */
-export async function sendClientPaymentConfirmation(order, items) {
-  const { subject, html } = clientPaymentConfirmationTemplate(order, items);
+export async function sendClientPaymentConfirmation(order, items, invoicePdfUrl) {
+  const { subject, html } = clientPaymentConfirmationTemplate(order, items, invoicePdfUrl);
   return sendEmail(order.client_email, subject, html);
 }
 

@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { initDatabase, closeDatabase } from './db/database.js';
 import { initEmailService } from './services/emailService.js';
 import { initCronJobs } from './services/cronService.js';
@@ -25,6 +26,53 @@ app.use(cors({
 app.use('/api/stripe', stripeRouter);
 
 app.use(express.json({ limit: '1mb' }));
+
+// ─── Rate Limiting ────────────────────────────────────────
+// Global : 100 requêtes par IP toutes les 15 minutes
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'Trop de requêtes. Veuillez réessayer dans quelques minutes.',
+  },
+});
+app.use('/api/', globalLimiter);
+
+// Création de commande : 5 requêtes par IP toutes les 15 minutes (anti-spam)
+const orderCreationLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'Trop de demandes de réservation. Veuillez réessayer dans quelques minutes.',
+  },
+});
+app.use('/api/orders', (req, res, next) => {
+  if (req.method === 'POST') {
+    return orderCreationLimiter(req, res, next);
+  }
+  next();
+});
+
+// Actions sur les commandes : 10 requêtes par IP toutes les 15 minutes
+const orderActionLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'Trop de requêtes d\'action. Veuillez réessayer dans quelques minutes.',
+  },
+});
+app.use('/api/orders/:id', (req, res, next) => {
+  if (req.method === 'PUT') {
+    return orderActionLimiter(req, res, next);
+  }
+  next();
+});
 
 // Request logging
 app.use((req, res, next) => {
