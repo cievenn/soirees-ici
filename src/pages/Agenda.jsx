@@ -148,7 +148,7 @@ export default function Agenda({ navigateTo }) {
                     } rounded-[1.5rem] md:rounded-[2.5rem] transform rotate-3 scale-105 opacity-20 blur-xl group-hover:rotate-6 transition-transform duration-700`}
                   />
                   <img
-                    src={event.image || event.image1 || '/achanger.png'}
+                    src={event.image || event.image1 || '/fonts/event-image/achanger.png'}
                     alt={event.title}
                     className="rounded-[1.5rem] md:rounded-[2.5rem] w-full h-52 sm:h-64 md:h-80 lg:h-[500px] object-cover relative z-10 shadow-xl border-4 border-white transition-transform duration-700 group-hover:scale-105"
                   />

@@ -178,7 +178,7 @@ export default function EventPage({ navigateTo }) {
     );
   }
 
-  const heroImg = event.heroImage || event.image || event.image1 || '/achanger.png';
+  const heroImg = event.heroImage || event.image || event.image1 || '/fonts/event-image/achanger.png';
 
   return (
     <div className="animate-fade-in">

@@ -159,7 +159,7 @@ export default function Home({ navigateTo }) {
 
           {/* Card 2 : Photos */}
           <div className={`col-span-1 bg-[#111] rounded-[2rem] md:rounded-[3rem] p-3 md:p-4 relative overflow-hidden group cursor-pointer ${THEME.softShadow} min-h-[300px] md:min-h-[450px]`} onClick={() => navigateTo('photos')}>
-            <img src="/galeries.png" alt="Photos" className="w-full h-full object-cover rounded-[1.5rem] md:rounded-[2.5rem] transition-transform duration-1000 group-hover:scale-105 opacity-80" />
+            <img src="/fonts/event-image/galeries.png" alt="Photos" className="w-full h-full object-cover rounded-[1.5rem] md:rounded-[2.5rem] transition-transform duration-1000 group-hover:scale-105 opacity-80" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-[2rem] md:rounded-[3rem]"></div>
             <div className="absolute inset-0 p-6 md:p-10 flex flex-col justify-end text-white text-center items-center">
               <div className="w-12 h-12 md:w-16 md:h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mb-4 md:mb-6 border border-white/30 group-hover:bg-[#ff007f] transition-colors duration-500">
